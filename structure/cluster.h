@@ -16,6 +16,10 @@ public:
 
     std::vector<int> getDataIdList() { return data_id_list; }
 
+    void addDataId(int data_id) { data_id_list.push_back(data_id); }
+
+    int getClusterId() { return cluster_id; }
+
     void clear() { data_id_list.clear(); }
 };
 

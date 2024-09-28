@@ -1,12 +1,17 @@
 #include "KMeansBase.h"
 #include "centroid.h"
+#include <iostream>
 #include <random>
 #include <set>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <utils.h>
 
-KMeansBase::KMeansBase(int max_iterations = 30, double convergence_threshold = 1e-4)
+using namespace Utils;
+using namespace std;
+
+KMeansBase::KMeansBase(int max_iterations, double convergence_threshold)
     : max_iterations(max_iterations), convergence_threshold(convergence_threshold) {}
 
 KMeansBase::~KMeansBase() {
@@ -59,11 +64,35 @@ void KMeansBase::load(const std::string& file_path) {
     file.close();
 }
 
+// output k cluster with the schema as {cluster_id: int, point_id_list: list()}
+void KMeansBase::output(const std::string& file_path) {
+    std::ofstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file: " + file_path);
+    }
+
+    for (auto centroid : centroid_list) {
+        Cluster* clus = centroid->getCluster();
+        file << "{cluster_id: " << clus->getClusterId() << ", point_id_list: [";
+
+        std::vector<int> data_id_list = clus->getDataIdList();
+        for (size_t i = 0; i < data_id_list.size(); ++i) {
+            file << data_id_list[i];
+            if (i < data_id_list.size() - 1) {
+                    file << ", ";
+            }
+        }
+        file << "]}" << std::endl;
+    }
+
+    file.close();
+}
+
 // initialize all centroids randomly
 void KMeansBase::initializeCentroids() {
     std::set<int> selected_ids;
 
-    for (int i; i = 0; i < k) {
+    for (int i; i < k; i ++) {
         // unsigned seed = 42;      // fixed seed
         std::random_device seed;    // random seed
         std::mt19937 gen(seed());
@@ -79,4 +108,35 @@ void KMeansBase::initializeCentroids() {
 
         centroid_list.push_back(centroid);
     }
+}
+
+// assign all data points to a cluster with an intiger label
+void KMeansBase::assignLabels() {}
+
+// update each centroid as the mean of each cluster
+void KMeansBase::updateCentroids() {
+    for (auto centroid : centroid_list) {
+        std::vector<int> data_id_list = centroid->getCluster()->getDataIdList();
+        int data_num = data_id_list.size();
+
+        std::vector<double> new_coordinate(data_dimension, 0);
+        for (int data_id : data_id_list) {
+            new_coordinate = addVector(new_coordinate, dataset[data_id]);
+        }
+        new_coordinate = divideVector(new_coordinate, data_num);
+
+        centroid->updateCoordinate(new_coordinate);
+    }
+}
+
+// determine whether the algorithm has converged
+bool KMeansBase::hasConverged() {
+    double sum_drift = 0.0;
+    
+    for (auto centroid : centroid_list) {
+        sum_drift += distance1(centroid->getCoordinate(), centroid->getOldCoordinate());
+    }
+
+    cout << "sum drift: " << sum_drift << endl;
+    return sum_drift <= convergence_threshold;
 }

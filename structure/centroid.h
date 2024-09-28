@@ -8,6 +8,7 @@
 class Centroid {
 protected:
     std::vector<double> coordinate;
+    std::vector<double> old_coordinate; // coordinate from the last iteration
     int point_id;       // only used in initialization
     int centroid_id;
     Cluster* cluster;   // remember to release the memory
@@ -22,9 +23,12 @@ public:
 
     std::vector<double> getCoordinate() { return coordinate; }
 
+    std::vector<double> getOldCoordinate() { return old_coordinate; }
+
     Cluster* getCluster() { return cluster; }
 
     void updateCoordinate(std::vector<double> new_coordinate) {
+        this->old_coordinate = this->coordinate;
         this->coordinate = new_coordinate;
     }
 };

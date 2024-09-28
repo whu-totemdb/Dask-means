@@ -1,2 +1,6 @@
 .vscode/
 a.out
+
+dataset/
+output/
+build/

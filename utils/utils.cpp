@@ -16,4 +16,26 @@ namespace Utils {
         }
         return sum;
     }
+
+    std::vector<double> addVector(const std::vector<double>& a, const std::vector<double>& b) {
+        if (a.size() != b.size()) {
+            throw std::invalid_argument("Vectors must be of the same dimension.");
+        }
+        std::vector<double> result(a.size());
+        for (size_t i = 0; i < a.size(); ++i) {
+            result[i] = a[i] + b[i];
+        }
+        return result;
+    }
+
+    std::vector<double> divideVector(const std::vector<double>& v, double c) {
+        if (c == 0) {
+            throw std::invalid_argument("Scaling factor cannot be zero.");
+        }
+        std::vector<double> result(v.size());
+        for (size_t i = 0; i < v.size(); ++i) {
+            result[i] = v[i] / c;
+        }
+        return result;
+    }
 }

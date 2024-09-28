@@ -1,33 +1,26 @@
-
-#include "utils/utils.h"
+#include "Lloyd.h"
+#include <limits>
+#include <cmath>
+#include <utils.h>
 using namespace Utils;
 
-
-#include "KMeansBase.h"
-
-class Lloyd : public KMeansBase {
-public:
-    Lloyd(int max_iterations = 30, double convergence_threshold = 1e-4);
-    
-    ~Lloyd();
-
-    void run() override;
-
-protected:
-    void assignLabels() override;
-
-    void updateCentroids() override;
-
-};
-
-
-Lloyd::Lloyd(int max_iterations = 30, double convergence_threshold = 1e-4)
+Lloyd::Lloyd(int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {}
 
-Lloyd::~Lloyd() {}
+void Lloyd::run() {
+    initializeCentroids();
+    do {
+        assignLabels();
+        updateCentroids();
+    } while (!hasConverged());
+}
 
-// Lloyd: compute the distance from each data point to each centroid
 void Lloyd::assignLabels() {
+    // clear all clusters firstly
+    for (auto centroid : centroid_list) {
+        centroid->getCluster()->clear();
+    }
+
     for (int j = 0; j < data_scale; j++) {
         auto data_point = dataset[j];
         int nearest_centroid_id = 0;
@@ -42,8 +35,22 @@ void Lloyd::assignLabels() {
             nearest_centroid_id = i;
         }
 
-        // assign the data point to a cluster
         labels[j] = nearest_centroid_id;
-        centroid_list[nearest_centroid_id]->getCluster()->getDataIdList().push_back(j);
+        centroid_list[nearest_centroid_id]->getCluster()->addDataId(j);
+    }
+}
+
+void Lloyd::updateCentroids() {
+    for (auto centroid : centroid_list) {
+        std::vector<int> data_id_list = centroid->getCluster()->getDataIdList();
+        int data_num = data_id_list.size();
+
+        std::vector<double> new_coordinate(data_dimension, 0);
+        for (int data_id : data_id_list) {
+            new_coordinate = addVector(new_coordinate, dataset[data_id]);
+        }
+        new_coordinate = divideVector(new_coordinate, data_num);
+
+        centroid->updateCoordinate(new_coordinate);
     }
 }
