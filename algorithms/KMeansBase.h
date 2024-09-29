@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <string>
 
-#include "../structure/centroid.h"
-#include "../structure/cluster.h"
+#include "../structure/Centroid.h"
+#include "../structure/Cluster.h"
 
 class KMeansBase {
 protected:
@@ -45,4 +45,4 @@ protected:
     virtual bool hasConverged();
 };
 
-#endif // KMEANSBASE_H
+#endif

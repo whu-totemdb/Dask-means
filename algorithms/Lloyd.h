@@ -2,7 +2,7 @@
 #define LLOYD_H
 
 #include "KMeansBase.h"
-#include "../utils/utils.h"
+#include "../utils/Utils.h"
 
 class Lloyd : public KMeansBase {
 public:

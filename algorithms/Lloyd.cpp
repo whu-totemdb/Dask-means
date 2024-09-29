@@ -1,7 +1,7 @@
 #include "Lloyd.h"
 #include <limits>
 #include <cmath>
-#include <utils.h>
+#include <Utils.h>
 using namespace Utils;
 
 Lloyd::Lloyd(int max_iterations, double convergence_threshold)

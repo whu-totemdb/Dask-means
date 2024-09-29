@@ -1,12 +1,12 @@
 #include "KMeansBase.h"
-#include "centroid.h"
+#include "Centroid.h"
 #include <iostream>
 #include <random>
 #include <set>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <utils.h>
+#include <Utils.h>
 
 using namespace Utils;
 using namespace std;

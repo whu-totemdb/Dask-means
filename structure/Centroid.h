@@ -3,7 +3,7 @@
 #define CENTROID_H
 
 #include <vector>
-#include "cluster.h"
+#include "Cluster.h"
 
 class Centroid {
 protected:
