@@ -5,6 +5,6 @@ using namespace std;
 
 int main(){
     Experiment* experiment = new Experiment();
-    experiment->test_Lloyd();
+    experiment->test_ball_tree();
     return 0;
 }

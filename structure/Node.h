@@ -8,14 +8,15 @@
 using namespace Utils;
 
 class Node {
-private:
+public:
     // basic structure of a tree node
     Node* leftChild;
     Node* rightChild;
-    bool isLeaf = false;
+    bool leaf = false;
     std::vector<int> data_id_list;      // data covered by **leaf node**
 
     // exclusive to ball tree node
+    std::vector<int> farthest_point_id;
     std::vector<double> pivot;
     double radius;
 
@@ -24,13 +25,22 @@ private:
     int point_number = 0;
 
 public:
-    Node() {};
+    Node() {
+        leftChild = nullptr;
+        rightChild = nullptr;
+    };
 
     Node(std::vector<double> pivot, double radius)
-        : pivot(pivot), radius(radius) {};
+        : pivot(pivot), radius(radius) {
+        leftChild = nullptr;
+        rightChild = nullptr;
+    };
 
     Node(std::vector<double> pivot, double radius, bool isLeaf)
-        : pivot(pivot), radius(radius), isLeaf(isLeaf) {};
+        : pivot(pivot), radius(radius), leaf(leaf) {
+        leftChild = nullptr;
+        rightChild = nullptr;
+    };
 
     ~Node() {
         delete leftChild;
@@ -39,28 +49,13 @@ public:
         rightChild = nullptr;
     };
 
-    void setLeftChild(Node* node) {
-        if (node != nullptr) {
-            leftChild = node;
-        }
-    }
-
-    void setRightChild(Node* node) {
-        if (node != nullptr) {
-            rightChild = node;
-        }
-    }
-
-    Node* getLeftChild() { return leftChild; }
-
-    Node* getRightChild() { return rightChild; }
-
-    bool isLeaf() { return this->isLeaf; }
+    bool isLeaf() { return this->leaf; }
 
     void initLeafNode(std::vector<int> data_id_list, int size) {
-        this->isLeaf = true;
+        this->leaf = true;
         this->data_id_list = data_id_list;
         this->point_number = size;
+        this->sum_vector = multiplyVector(pivot, point_number);
     }
 
     void dataIn(std::vector<double> vec_in) {

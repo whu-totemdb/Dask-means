@@ -14,10 +14,11 @@ include_directories(
 )
 
 set(SOURCES
-    utils/utils.cpp
+    utils/Utils.cpp
     algorithms/KMeansBase.cpp
     algorithms/Lloyd.cpp
     interface.cpp
+    structure/BallTree.cpp
 )
 
 add_executable(DaskMeans ${SOURCES})

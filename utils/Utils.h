@@ -26,6 +26,9 @@ namespace Utils {
 
     // divide a vector by a constant
     std::vector<double> divideVector(const std::vector<double>& v, double c);
+
+    // multiply a vector by a constant
+    std::vector<double> multiplyVector(const std::vector<double>& v, double c);
 }
 
 #endif // UTILS_H

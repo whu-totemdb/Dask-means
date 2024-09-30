@@ -89,4 +89,12 @@ namespace Utils {
         }
         return result;
     }
+
+    std::vector<double> multiplyVector(const std::vector<double>& v, double c) {
+        std::vector<double> result(v.size());
+        for (size_t i = 0; i < v.size(); ++i) {
+            result[i] = v[i] * c;
+        }
+        return result;
+    }
 }
