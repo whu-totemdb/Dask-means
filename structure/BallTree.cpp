@@ -3,6 +3,13 @@
 
 using namespace Utils;
 
+
+BallTree::BallTree() { root = new Node(); }
+
+BallTree::BallTree(int capacity): capacity(capacity) { root = new Node(); }
+
+BallTree::~BallTree() { delete root; }
+
 void BallTree::buildBallTree(std::vector<std::vector<double>>& dataset, int data_scale) {
     createNode(dataset, data_scale, *root);
     std::vector<int> point_id_list(data_scale);

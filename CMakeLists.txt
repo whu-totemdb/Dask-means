@@ -19,6 +19,7 @@ set(SOURCES
     algorithms/Lloyd.cpp
     interface.cpp
     structure/BallTree.cpp
+    structure/Node.cpp
 )
 
 add_executable(DaskMeans ${SOURCES})

@@ -12,9 +12,11 @@ private:
     int capacity = 1;   // leaf node capatity
     
 public:
-    BallTree() { root = new Node(); }
-    BallTree(int capacity): capacity(capacity) { root = new Node(); }
-    ~BallTree() { delete root; }
+    BallTree();
+
+    BallTree(int capacity);
+    
+    ~BallTree();
 
     void buildBallTree(std::vector<std::vector<double>>& dataset, int data_scale);
 
