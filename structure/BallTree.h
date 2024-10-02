@@ -3,11 +3,11 @@
 #define BALLTREE_H
 
 #include <vector>
-
-#include <Node.h>
+#include "Centroid.h"
+#include "Node.h"
 
 class BallTree {
-private:
+public:
     Node* root;
     int capacity = 1;   // leaf node capatity
     
@@ -15,15 +15,21 @@ public:
     BallTree();
 
     BallTree(int capacity);
-    
+
     ~BallTree();
 
     void buildBallTree(std::vector<std::vector<double>>& dataset, int data_scale);
 
+    void buildBallTree(std::vector<Centroid*>& centroid_list, int k);
+
     void buildBallTree1(std::vector<std::vector<double>>& dataset, 
         Node& node, std::vector<int> point_id_list);
 
-    void buildBalancedBallTree(std::vector<std::vector<double>>& dataset, int data_scale, int data_dimension);
+    void buildBallTree1(std::vector<Centroid*>& centroid_list, 
+        Node& node, std::vector<int> centroid_id_list);
+
+    void buildBalancedBallTree(std::vector<std::vector<double>>& dataset,
+        int data_scale, int data_dimension);
 
     /*function*/
     void createNode(std::vector<std::vector<double>>& dataset,
@@ -32,11 +38,11 @@ public:
     void createNode(std::vector<std::vector<double>>& dataset, 
         std::vector<int> point_id_list, int size, Node& node);
 
-    std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<std::vector<double>>& dataset, int data_scale);
-    
-    std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list);
+    void createNode(std::vector<Centroid*>& centroid_list, 
+        int data_scale, Node& node);
+
+    void createNode(std::vector<Centroid*>& centroid_list, 
+        std::vector<int> centroid_id_list, int size, Node& node);
 
 };
 

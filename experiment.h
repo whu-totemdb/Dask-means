@@ -32,7 +32,7 @@ void Experiment::test_ball_tree() {
     DaskMeans* dask_means = new DaskMeans();
     dask_means->initParameters(6, 2, 2);
     dask_means->load(data_path);
-    dask_means->buildBallTree();
+    dask_means->testKnn();
 
 }
 

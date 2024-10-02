@@ -3,9 +3,6 @@
 #define NODE_H
 
 #include <vector>
-#include <../utils/Utils.h>
-
-using namespace Utils;
 
 class Node {
 public:

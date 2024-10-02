@@ -17,6 +17,7 @@ set(SOURCES
     utils/Utils.cpp
     algorithms/KMeansBase.cpp
     algorithms/Lloyd.cpp
+    algorithms/DaskMeans.cpp
     interface.cpp
     structure/BallTree.cpp
     structure/Node.cpp
