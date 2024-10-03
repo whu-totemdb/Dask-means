@@ -19,8 +19,8 @@ namespace Utils {
     // get the sum of all vectors in dataset
     std::vector<double> sumVectorsInDataset(const std::vector<std::vector<double>>& dataset);
     std::vector<double> sumVectorsInDataset(const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list);
-    std::vector<double> sumVectorsInDataset(const std::vector<Centroid*>& centroid_list);
-    std::vector<double> sumVectorsInDataset(const std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
+    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list);
+    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
 
     // get the sum vector
     std::vector<double> addVector(const std::vector<double>& a, const std::vector<double>& b);
@@ -40,19 +40,19 @@ namespace Utils {
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
         const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list);
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<Centroid*>& centroid_list, int data_scale);
+        std::vector<Centroid*>& centroid_list, int data_scale);
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
+        std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
 
     // ball-tree knn
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
         const std::vector<std::vector<double>>& dataset);
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
-        const std::vector<Centroid*>& centroid_list);
+        std::vector<Centroid*>& centroid_list);
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
         const std::vector<std::vector<double>>& dataset);
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
-        const std::vector<Centroid*>& centroid_list);
+        std::vector<Centroid*>& centroid_list);
 }
 
 #endif // UTILS_H

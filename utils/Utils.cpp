@@ -57,7 +57,7 @@ namespace Utils {
         return result;
     }
 
-    std::vector<double> sumVectorsInDataset(const std::vector<Centroid*>& centroid_list) {
+    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list) {
         if (centroid_list.empty()) {
             throw std::invalid_argument("Dataset must not be empty.");
         }
@@ -76,7 +76,7 @@ namespace Utils {
         return result;
     }
 
-    std::vector<double> sumVectorsInDataset(const std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
+    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
         if (centroid_list.empty()) {
             throw std::invalid_argument("Dataset must not be empty.");
         }
@@ -181,7 +181,7 @@ namespace Utils {
     }
 
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<Centroid*>& centroid_list, int data_scale) {
+        std::vector<Centroid*>& centroid_list, int data_scale) {
 
         std::vector<int> point_ids(2, 0);       // [farthest point id, second ... id]
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
@@ -203,7 +203,7 @@ namespace Utils {
     }
 
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
+        std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
 
         std::vector<int> point_ids(2, 0);       // [farthest point id, second ... id]
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
@@ -249,7 +249,7 @@ namespace Utils {
     }
 
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
-        const std::vector<Centroid*>& centroid_list) {
+        std::vector<Centroid*>& centroid_list) {
         if (root.isLeaf()) {
             for (int id : root.data_id_list) {
                 double distance = distance1(point, centroid_list[id]->getCoordinate());
@@ -304,7 +304,7 @@ namespace Utils {
     }
 
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
-        const std::vector<Centroid*>& centroid_list) {
+        std::vector<Centroid*>& centroid_list) {
         if (root.isLeaf()) {
             for (int id : root.data_id_list) {
                 double distance = distance1(point, centroid_list[id]->getCoordinate());

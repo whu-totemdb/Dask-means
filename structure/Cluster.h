@@ -5,22 +5,32 @@
 #include <vector>
 
 class Cluster {
-protected:
+public:
     std::vector<int> data_id_list;
     int cluster_id;
 
+    // used for dask-means
+    std::vector<Node*> node_list;
+    std::vector<double> sum_vec;
+
 public:
-    Cluster(int cluster_id): cluster_id(cluster_id) {}
+    Cluster(int cluster_id);
 
-    ~Cluster() {}
+    ~Cluster();
 
-    std::vector<int> getDataIdList() { return data_id_list; }
+    std::vector<int> getDataIdList();
 
-    void addDataId(int data_id) { data_id_list.push_back(data_id); }
+    void addDataId(int data_id);
 
-    int getClusterId() { return cluster_id; }
+    int getClusterId();
 
-    void clear() { data_id_list.clear(); }
+    void clear();
+
+    void dataIn(std::vector<double> data_in, int data_id);
+    void dataIn(std::vector<double> data_in, Node& node);
+
+    void dataOut(std::vector<double> data_out, int data_id);
+    void dataOut(std::vector<double> data_out, Node& node);
 };
 
 #endif // CLUSTER_H

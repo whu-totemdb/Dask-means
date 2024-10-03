@@ -20,6 +20,8 @@ public:
     // used for dask-means
     std::vector<double> sum_vector;
     int point_number = 0;
+    int centroid_id = -1;   // internal: centroid id the the node is assigned to
+    std::vector<int> centroid_id_for_data;  // leaf: centroid id that each data is assiged to
 
 public:
     Node();
@@ -34,10 +36,11 @@ public:
 
     void initLeafNode(std::vector<int> data_id_list, int size);
 
-    void dataIn(std::vector<double> vec_in); 
+    // void dataIn(std::vector<double> vec_in); 
 
-    void dataOut(std::vector<double> vec_out);
+    // void dataOut(std::vector<double> vec_out);
     
+    void setAssigned(int id);
 };
 
 #endif // NODE_H

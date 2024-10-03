@@ -47,16 +47,16 @@ public:
         return res;
     }
 
-protected:
-    void assignLabels() override{};
-    
-    void updateCentroids() override{};
-
+// protected:
     void buildDataIndex(int capacity = 1);
 
     void buildCentroidIndex(int capacity = 1);
 
-    void initInnerBound(){};
+    void initInnerBound();
+
+    void assignLabels(Node& node, double ub);
+    
+    void updateCentroids() override;
     
 };
 

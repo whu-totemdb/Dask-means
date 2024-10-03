@@ -30,14 +30,19 @@ void Node::initLeafNode(std::vector<int> data_id_list, int size) {
     this->data_id_list = data_id_list;
     this->point_number = size;
     this->sum_vector = Utils::multiplyVector(pivot, point_number);
+    centroid_id_for_data = std::vector(size, -1);
 }
 
-void Node::dataIn(std::vector<double> vec_in) {
-    sum_vector = Utils::addVector(sum_vector, vec_in);
-    point_number += 1;
-}
+// void Node::dataIn(std::vector<double> vec_in) {
+//     sum_vector = Utils::addVector(sum_vector, vec_in);
+//     point_number += 1;
+// }
 
-void Node::dataOut(std::vector<double> vec_out) {
-    sum_vector = Utils::subtractVector(sum_vector, vec_out);
-    point_number -= 1;
+// void Node::dataOut(std::vector<double> vec_out) {
+//     sum_vector = Utils::subtractVector(sum_vector, vec_out);
+//     point_number -= 1;
+// }
+
+void Node::setAssigned(int id) {
+    centroid_id = id;
 }

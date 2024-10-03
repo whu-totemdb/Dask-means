@@ -13,24 +13,22 @@ protected:
     int centroid_id;
     Cluster* cluster;   // remember to release the memory
 
+    // for dask-means
+    double drift;
+    double max_drift;
+
 public:
-    Centroid(int point_id, std::vector<double> coordinate, int centroid_id)
-        : point_id(point_id), coordinate(coordinate), centroid_id(centroid_id) {
-        cluster = new Cluster(centroid_id);
-    }
+    Centroid(int point_id, std::vector<double> coordinate, int centroid_id);
 
-    ~Centroid() { delete cluster; }
+    ~Centroid();
 
-    std::vector<double> getCoordinate() { return coordinate; }
+    std::vector<double> getCoordinate();
 
-    std::vector<double> getOldCoordinate() { return old_coordinate; }
+    std::vector<double> getOldCoordinate();
 
-    Cluster* getCluster() { return cluster; }
+    Cluster* getCluster();
 
-    void updateCoordinate(std::vector<double> new_coordinate) {
-        this->old_coordinate = this->coordinate;
-        this->coordinate = new_coordinate;
-    }
+    void updateCoordinate(std::vector<double> new_coordinate);
 };
 
 #endif // CENTROID_H
