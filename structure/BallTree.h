@@ -31,6 +31,8 @@ public:
     void buildBalancedBallTree(std::vector<std::vector<double>>& dataset,
         int data_scale, int data_dimension);
 
+    void initBallTree();
+
     /*function*/
     void createNode(std::vector<std::vector<double>>& dataset,
         int data_scale, Node& node);

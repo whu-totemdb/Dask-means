@@ -4,9 +4,10 @@
 
 Centroid::Centroid(int point_id, std::vector<double> coordinate, int centroid_id)
     : point_id(point_id), coordinate(coordinate), centroid_id(centroid_id) {
-    cluster = new Cluster(centroid_id);
-    max_drift = 0;
-}
+        cluster = new Cluster(centroid_id, coordinate.size());
+        max_drift = 0;
+        drift = 0;
+    }
 
 Centroid::~Centroid() { delete cluster; }
 

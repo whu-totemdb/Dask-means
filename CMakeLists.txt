@@ -22,6 +22,7 @@ set(SOURCES
     structure/BallTree.cpp
     structure/Node.cpp
     structure/Centroid.cpp
+    structure/Cluster.cpp
 )
 
 add_executable(DaskMeans ${SOURCES})

@@ -19,12 +19,15 @@ Node::Node(std::vector<double> pivot, double radius, bool isLeaf)
 }
 
 Node::~Node() {
-    delete leftChild;
-    delete rightChild;
-    leftChild = nullptr;
-    rightChild = nullptr;
+    if (!isLeaf()) {
+        delete leftChild;
+        delete rightChild;
+        leftChild = nullptr;
+        rightChild = nullptr;
+    }
 }
 
+// only called by leaf node
 void Node::initLeafNode(std::vector<int> data_id_list, int size) {
     this->leaf = true;
     this->data_id_list = data_id_list;
@@ -33,16 +36,34 @@ void Node::initLeafNode(std::vector<int> data_id_list, int size) {
     centroid_id_for_data = std::vector(size, -1);
 }
 
-// void Node::dataIn(std::vector<double> vec_in) {
-//     sum_vector = Utils::addVector(sum_vector, vec_in);
-//     point_number += 1;
-// }
-
-// void Node::dataOut(std::vector<double> vec_out) {
-//     sum_vector = Utils::subtractVector(sum_vector, vec_out);
-//     point_number -= 1;
-// }
-
+// assign the node to the centroid with the id given
 void Node::setAssigned(int id) {
     centroid_id = id;
+}
+
+// set the sum_vector and point_number after building the ball-tree
+void Node::setSum() {    
+    if (this->isLeaf()) {
+        return;
+    }
+    leftChild->setSum();
+    rightChild->setSum();
+    sum_vector = Utils::addVector(leftChild->sum_vector, rightChild->sum_vector);
+    point_number = leftChild->point_number + rightChild->point_number;
+}
+
+std::vector<int> Node::getAllDataId() {
+    if (isLeaf()) {
+        return data_id_list;
+    }
+
+    std::vector<int> data_in_left_child = leftChild->getAllDataId();
+    std::vector<int> data_in_right_child = rightChild->getAllDataId();
+    data_in_left_child.insert(data_in_left_child.end(), 
+        data_in_right_child.begin(), data_in_right_child.end());
+    return data_in_left_child;
+}
+
+bool Node::operator==(const Node& other) const {
+    return (this->pivot == other.pivot) && (this->radius == other.radius);
 }

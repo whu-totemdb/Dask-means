@@ -15,6 +15,8 @@ private:
     BallTree* data_index;
     BallTree* centroid_index;
     std::vector<double> inner_bound;
+    std::vector<double> ub;
+    int capacity;
     /*
     std::vector<std::vector<double>> dataset;
     std::vector<Centroid*> centroid_list;   // remember to release the memory
@@ -27,32 +29,20 @@ private:
     */
 
 public:
-    DaskMeans(int max_iterations = 30, double convergence_threshold = 0.001);
+    DaskMeans(int capacity, int max_iterations = 30, double convergence_threshold = 0);
 
     ~DaskMeans() override;
 
-    void run() {};
+    void run();
 
-    std::vector<KnnRes*> testKnn() {
-        std::vector<double> point;
-        point.push_back(3.5);
-        point.push_back(3.5);
-        KnnRes* res1 = new KnnRes();
-        KnnRes* res2 = new KnnRes();
-        std::vector<KnnRes*> res;
-        res.push_back(res1);
-        res.push_back(res2);
-        buildDataIndex(1);
-        ballTree2nn(point, *(data_index->root), res, dataset);
-        return res;
-    }
+    void output(const std::string& file_path) override;
 
-// protected:
+protected:
     void buildDataIndex(int capacity = 1);
 
     void buildCentroidIndex(int capacity = 1);
 
-    void initInnerBound();
+    void setInnerBound();
 
     void assignLabels(Node& node, double ub);
     

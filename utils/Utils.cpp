@@ -143,17 +143,17 @@ namespace Utils {
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id = 0; point_id < data_scale; point_id++) {
             double dis = distance1(center, dataset[point_id]);
-
             if (dis >= distances[0]) {
-                point_ids[1] = point_ids[0];
                 point_ids[0] = point_id;
-                distances[1] = distances[0];
                 distances[0] = dis;
             } 
-            else if (dis > distances[1]) {
+        }
+        for (int point_id = 0; point_id < data_scale; point_id++) {
+            double dis = distance1(dataset[point_ids[0]], dataset[point_id]);
+            if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
-            }
+            } 
         }
         return point_ids;
     }
@@ -165,14 +165,14 @@ namespace Utils {
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id : point_id_list) {
             double dis = distance1(center, dataset[point_id]);
-
             if (dis >= distances[0]) {
-                point_ids[1] = point_ids[0];
                 point_ids[0] = point_id;
-                distances[1] = distances[0];
                 distances[0] = dis;
             } 
-            else if (dis > distances[1]) {
+        }
+        for (int point_id : point_id_list) {
+            double dis = distance1(dataset[point_ids[0]], dataset[point_id]);
+            if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
             }
@@ -187,14 +187,14 @@ namespace Utils {
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id = 0; point_id < data_scale; point_id++) {
             double dis = distance1(center, centroid_list[point_id]->getCoordinate());
-
             if (dis >= distances[0]) {
-                point_ids[1] = point_ids[0];
                 point_ids[0] = point_id;
-                distances[1] = distances[0];
                 distances[0] = dis;
             } 
-            else if (dis > distances[1]) {
+        }
+        for (int point_id = 0; point_id < data_scale; point_id++) {
+            double dis = distance1(centroid_list[point_ids[0]]->getCoordinate(), centroid_list[point_id]->getCoordinate());
+            if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
             }
@@ -209,14 +209,14 @@ namespace Utils {
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id : centroid_id_list) {
             double dis = distance1(center, centroid_list[point_id]->getCoordinate());
-
             if (dis >= distances[0]) {
-                point_ids[1] = point_ids[0];
                 point_ids[0] = point_id;
-                distances[1] = distances[0];
                 distances[0] = dis;
             } 
-            else if (dis > distances[1]) {
+        }
+        for (int point_id : centroid_id_list) {
+            double dis = distance1(centroid_list[point_ids[0]]->getCoordinate(), centroid_list[point_id]->getCoordinate());
+            if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
             }

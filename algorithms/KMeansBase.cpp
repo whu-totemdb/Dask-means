@@ -3,7 +3,6 @@
 #include <iostream>
 #include <random>
 #include <set>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <Utils.h>
@@ -90,10 +89,12 @@ void KMeansBase::output(const std::string& file_path) {
 
 // initialize all centroids randomly
 void KMeansBase::initializeCentroids() {
+    centroid_list.clear();
     std::set<int> selected_ids;
 
-    for (int i; i < k; i ++) {
+    for (int i = 0; i < k; i ++) {
         // unsigned seed = 42;      // fixed seed
+        // std::mt19937 gen(seed);
         std::random_device seed;    // random seed
         std::mt19937 gen(seed());
         std::uniform_int_distribution<> distrib(0, data_scale - 1);

@@ -35,12 +35,14 @@ public:
     bool isLeaf() { return this->leaf; }
 
     void initLeafNode(std::vector<int> data_id_list, int size);
-
-    // void dataIn(std::vector<double> vec_in); 
-
-    // void dataOut(std::vector<double> vec_out);
     
     void setAssigned(int id);
+
+    void setSum();
+
+    std::vector<int> getAllDataId();
+
+    bool operator==(const Node& other) const;
 };
 
 #endif // NODE_H

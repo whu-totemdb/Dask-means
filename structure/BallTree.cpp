@@ -17,6 +17,7 @@ void BallTree::buildBallTree(std::vector<std::vector<double>>& dataset, int data
         point_id_list[i] = i;
     }
     buildBallTree1(dataset, *root, point_id_list);
+    initBallTree();
 }
 
 void BallTree::buildBallTree(std::vector<Centroid*>& centroid_list, int k) {
@@ -112,6 +113,9 @@ void BallTree::buildBalancedBallTree(std::vector<std::vector<double>>& dataset,
     
 }
 
+void BallTree::initBallTree() {
+    root->setSum();
+}
 
 /*function*/
 

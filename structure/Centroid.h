@@ -6,7 +6,7 @@
 #include "Cluster.h"
 
 class Centroid {
-protected:
+public:
     std::vector<double> coordinate;
     std::vector<double> old_coordinate; // coordinate from the last iteration
     int point_id;       // only used in initialization

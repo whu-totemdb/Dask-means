@@ -2,20 +2,63 @@
 #include "../structure/KnnRes.h"
 #include "../structure/Node.h"
 #include "../utils/Utils.h"
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 using namespace Utils;
 
-DaskMeans::DaskMeans(int max_iterations, double convergence_threshold)
+DaskMeans::DaskMeans(int capacity, int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {
-    
-}
+        this->capacity = capacity;
+    }
 
 DaskMeans::~DaskMeans() {
-    for (auto centroid : centroid_list) {
-        delete centroid;
-    }
     delete data_index;
     delete centroid_index;
+}
+
+void DaskMeans::run() {
+    bool is_first_iter = true;
+    buildDataIndex(this->capacity);
+    initializeCentroids();
+    do {
+        buildCentroidIndex();
+        if (is_first_iter) {
+            ub = std::vector<double>(k, std::numeric_limits<double>::max());
+            is_first_iter = false;
+        } else {
+            for (int i = 0; i < k; i++) {
+                ub[i] = inner_bound[i] + centroid_list[i]->drift + centroid_list[i]->max_drift;
+            }
+        }
+        setInnerBound();
+        assignLabels(*data_index->root, std::numeric_limits<double>::max());
+        updateCentroids();
+    } while (hasConverged());
+}
+
+void DaskMeans::output(const std::string& file_path) {
+    std::ofstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file: " + file_path);
+    }
+
+    for (auto centroid : centroid_list) {
+        Cluster* clus = centroid->getCluster();
+        file << "{cluster_id: " << clus->getClusterId() << ", point_id_list: [";
+
+        std::vector<int> data_id_list = clus->getAllDataId();
+        for (size_t i = 0; i < data_id_list.size(); ++i) {
+            file << data_id_list[i];
+            if (i < data_id_list.size() - 1) {
+                    file << ", ";
+            }
+        }
+        file << "]}" << std::endl;
+    }
+
+    file.close();
 }
 
 void DaskMeans::buildDataIndex(int capacity) {
@@ -31,22 +74,21 @@ void DaskMeans::buildCentroidIndex(int capacity) {
     centroid_index->buildBallTree(centroid_list, k);
 }
 
-void DaskMeans::initInnerBound() {
-    // using index ball-tree knn to initial inner bound
-    inner_bound = std::vector<double>(k, -1.0);
+void DaskMeans::setInnerBound() {
+    // using index ball-tree knn to set inner bound
+    this->inner_bound = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
         if (inner_bound[i] >= 0) {
             continue;
         }
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
-            res[i] = new KnnRes();
+            res[i] = new KnnRes(ub[i]);
         }
         ballTree2nn(centroid_list[i]->getCoordinate(), *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
         inner_bound[res[1]->id] = res[1]->dis;
     }
-
 }
 
 void DaskMeans::assignLabels(Node& node, double ub) {
@@ -63,7 +105,13 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     }
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
+        if (node.centroid_id != -1) {
+            Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
+            old_cluster->dataOut(node.sum_vector, &node);
+        }
         node.setAssigned(res[0]->id);
+        Cluster* new_cluster = centroid_list[node.centroid_id]->getCluster();
+        new_cluster->dataIn(node.sum_vector, &node);
         return;
     }
 
@@ -83,7 +131,21 @@ void DaskMeans::assignLabels(Node& node, double ub) {
             // use 1nn
             KnnRes* res = new KnnRes(ub);
             ballTree1nn(dataset[node.data_id_list[i]], *(centroid_index->root), *res, centroid_list);
+            if (node.centroid_id_for_data[i] != -1) {
+                Cluster* old_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
+                old_cluster->dataOut(dataset[node.data_id_list[i]], node.data_id_list[i]);
+            }
             node.centroid_id_for_data[i] = res[0].id;
+            Cluster* new_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
+            new_cluster->dataIn(dataset[node.data_id_list[i]], node.data_id_list[i]);
         }
+    }
+}
+
+void DaskMeans::updateCentroids() {
+    for (auto centroid : centroid_list) {
+        Cluster* cluster = centroid->getCluster();
+        std::vector<double> new_coordinate = divideVector(cluster->sum_vec, cluster->point_number);
+        centroid->updateCoordinate(new_coordinate);
     }
 }

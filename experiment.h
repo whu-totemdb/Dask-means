@@ -9,33 +9,35 @@ public:
 
     void test_Lloyd();
 
-    void test_ball_tree();
+    void test_dask_means();
 };
 
 void Experiment::test_Lloyd() {
     std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/test_optput.txt";
+    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/lloyd_output.txt";
 
     Lloyd* lloyd = new Lloyd();
-    lloyd->initParameters(20, 2, 2);
+    lloyd->initParameters(30, 2, 3);
+    // lloyd->initParameters(8, 2, 4);
     lloyd->load(data_path);
     lloyd->run();
     lloyd->output(output_path);
 
-    delete lloyd;
+    // delete lloyd;
 }
 
-void Experiment::test_ball_tree() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/test_optput.txt";
+void Experiment::test_dask_means() {
+    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
+    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/dask_output.txt";
 
-    DaskMeans* dask_means = new DaskMeans();
-    dask_means->initParameters(6, 2, 2);
+    DaskMeans* dask_means = new DaskMeans(2);
+    dask_means->initParameters(30, 2, 3);
     dask_means->load(data_path);
-    // dask_means->testKnn();
-    dask_means->tmp();
-    dask_means->buildDataIndex();
-    dask_means->buildCentroidIndex();
-    dask_means->initInnerBound();
+    dask_means->run();
+    dask_means->output(output_path);
+
+    delete dask_means;
 }
 
