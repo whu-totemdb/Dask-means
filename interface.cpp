@@ -8,5 +8,6 @@ int main(){
     experiment->test_Lloyd();
     experiment->test_dask_means();
     experiment->test_NoInB();
+    experiment->test_NoKnn();
     return 0;
 }

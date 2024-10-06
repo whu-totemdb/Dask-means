@@ -53,6 +53,16 @@ namespace Utils {
         const std::vector<std::vector<double>>& dataset);
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
         std::vector<Centroid*>& centroid_list);
+
+    // knn that uses simple calculation, storing the result in res
+    void calculate1nn(std::vector<double> point, KnnRes& res, 
+        const std::vector<std::vector<double>>& dataset);
+    void calculate1nn(std::vector<double> point, KnnRes& res, 
+        std::vector<Centroid*>& centroid_list);
+    void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
+        const std::vector<std::vector<double>>& dataset);
+    void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
+        std::vector<Centroid*>& centroid_list);
 }
 
 #endif // UTILS_H

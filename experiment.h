@@ -1,6 +1,7 @@
 #include "algorithms/Lloyd.h"
 #include "algorithms/DaskMeans.h"
 #include "algorithms/NoInB.h"
+#include "algorithms/NoKnn.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -13,6 +14,8 @@ public:
     void test_dask_means();
 
     void test_NoInB();
+
+    void test_NoKnn();
 };
 
 void Experiment::test_Lloyd() {
@@ -56,5 +59,19 @@ void Experiment::test_NoInB() {
     noInB->output(output_path);
 
     delete noInB;
+}
+
+void Experiment::test_NoKnn() {
+    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
+    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/NoKnn_output.txt";
+
+    NoKnn* noKnn = new NoKnn(2);
+    noKnn->initParameters(30, 2, 3);
+    noKnn->load(data_path);
+    noKnn->run();
+    noKnn->output(output_path);
+
+    delete noKnn;
 }
 

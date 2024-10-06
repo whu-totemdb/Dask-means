@@ -333,4 +333,59 @@ namespace Utils {
             ballTree2nn(point, *(root.rightChild), res, centroid_list);
         }
     }
+
+    void calculate1nn(std::vector<double> point, KnnRes& res, 
+        const std::vector<std::vector<double>>& dataset) {
+            for (int i = 0; i < dataset.size(); i++) {
+                int dis = distance1(point, dataset[i]);
+                if (dis <= res.dis) {
+                    res.dis = dis;
+                    res.id = i;
+                }
+            }
+        }
+
+    void calculate1nn(std::vector<double> point, KnnRes& res, 
+        std::vector<Centroid*>& centroid_list) {
+            for (int i = 0; i < centroid_list.size(); i++) {
+                int dis = distance1(point, centroid_list[i]->getCoordinate());
+                if (dis <= res.dis) {
+                    res.dis = dis;
+                    res.id = i;
+                }
+            }
+        }
+
+    void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
+        const std::vector<std::vector<double>>& dataset) {
+            for (int i = 0; i < dataset.size(); i++) {
+                int dis = distance1(point, dataset[i]);
+                if (dis <= res[0]->dis) {
+                    res[1]->dis = res[0]->dis;
+                    res[1]->id = res[0]->id;
+                    res[0]->dis = dis;
+                    res[0]->id = i;
+                } else if (dis < res[1]->dis) {
+                    res[1]->dis = dis;
+                    res[1]->id = i;
+                }
+            }
+        }
+
+    void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
+        std::vector<Centroid*>& centroid_list) {
+            for (int i = 0; i < centroid_list.size(); i++) {
+                int dis = distance1(point, centroid_list[i]->getCoordinate());
+                if (dis <= res[0]->dis) {
+                    res[1]->dis = res[0]->dis;
+                    res[1]->id = res[0]->id;
+                    res[0]->dis = dis;
+                    res[0]->id = i;
+                } else if (dis < res[1]->dis) {
+                    res[1]->dis = dis;
+                    res[1]->id = i;
+                }
+            }
+        }
+
 }
