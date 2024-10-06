@@ -38,10 +38,7 @@ protected:
     
     void updateCentroids() override;
 
-    void assignToCluster(Node& node, int centroid_id);
-
-    void removeFromCluster(Node& node, bool flag);
-    
+    void assignToCluster(Node& node, int centroid_id);   
 };
 
 #endif

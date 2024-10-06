@@ -35,11 +35,13 @@ void DaskMeans::run() {
         setInnerBound();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
         updateCentroids();
+        // output("/home/lzp/cs/dask-means-cpp/output/dask_output.txt");
     } while (!hasConverged());
 }
 
 void DaskMeans::output(const std::string& file_path) {
-    std::ofstream file(file_path, std::ios::app);
+    // std::ofstream file(file_path, std::ios::app);
+    std::ofstream file(file_path);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open file: " + file_path);
     }
@@ -116,7 +118,8 @@ void DaskMeans::assignLabels(Node& node, double ub) {
 
     if (!node.isLeaf()) {
         // 3. split the node into two child node
-        removeFromCluster(node, true);
+        // removeFromCluster(node, true);
+        assignToCluster(node, -1);
         assignLabels(*node.leftChild, res[1]->dis + node.radius);
         assignLabels(*node.rightChild, res[1]->dis + node.radius);
     } else {
@@ -175,27 +178,5 @@ void DaskMeans::assignToCluster(Node& node, int centroid_id) {
     } else {
         assignToCluster(*node.leftChild, centroid_id);
         assignToCluster(*node.rightChild, centroid_id);
-    }
-}
-
-// remove a node and all its child node from a cluster
-void DaskMeans::removeFromCluster(Node& node, bool flag) {
-    if (node.centroid_id == -1) {
-        return;
-    }
-
-    if (flag) {
-        Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
-        old_cluster->dataOut(node.sum_vector, &node);
-    }
-
-    node.centroid_id = -1;
-    if (node.isLeaf()) {
-        for (int i = 0; i < node.point_number; i++) {
-            node.centroid_id_for_data[i] = -1;
-        }
-    } else {
-        assignToCluster(*node.leftChild, false);
-        assignToCluster(*node.rightChild, false);
     }
 }
