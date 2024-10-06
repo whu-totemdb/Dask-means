@@ -18,6 +18,7 @@ set(SOURCES
     algorithms/KMeansBase.cpp
     algorithms/Lloyd.cpp
     algorithms/DaskMeans.cpp
+    algorithms/NoInB.cpp
     interface.cpp
     structure/BallTree.cpp
     structure/Node.cpp

@@ -16,6 +16,8 @@ DaskMeans::DaskMeans(int capacity, int max_iterations, double convergence_thresh
 DaskMeans::~DaskMeans() {
     delete data_index;
     delete centroid_index;
+    data_index = nullptr;
+    centroid_index = nullptr;
 }
 
 void DaskMeans::run() {
@@ -71,6 +73,7 @@ void DaskMeans::buildDataIndex(int capacity) {
 void DaskMeans::buildCentroidIndex(int capacity) {
     if (centroid_index != nullptr) {
         delete centroid_index;
+        centroid_index = nullptr;
     }
     centroid_index = new BallTree(capacity);
     centroid_index->buildBallTree(centroid_list, k);
@@ -118,7 +121,6 @@ void DaskMeans::assignLabels(Node& node, double ub) {
 
     if (!node.isLeaf()) {
         // 3. split the node into two child node
-        // removeFromCluster(node, true);
         assignToCluster(node, -1);
         assignLabels(*node.leftChild, res[1]->dis + node.radius);
         assignLabels(*node.rightChild, res[1]->dis + node.radius);

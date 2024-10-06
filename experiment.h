@@ -1,5 +1,6 @@
 #include "algorithms/Lloyd.h"
 #include "algorithms/DaskMeans.h"
+#include "algorithms/NoInB.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -10,6 +11,8 @@ public:
     void test_Lloyd();
 
     void test_dask_means();
+
+    void test_NoInB();
 };
 
 void Experiment::test_Lloyd() {
@@ -39,5 +42,19 @@ void Experiment::test_dask_means() {
     dask_means->output(output_path);
 
     delete dask_means;
+}
+
+void Experiment::test_NoInB() {
+    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
+    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/NoInB_output.txt";
+
+    NoInB* noInB = new NoInB(2);
+    noInB->initParameters(30, 2, 3);
+    noInB->load(data_path);
+    noInB->run();
+    noInB->output(output_path);
+
+    delete noInB;
 }
 

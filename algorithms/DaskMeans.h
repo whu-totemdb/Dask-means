@@ -11,7 +11,7 @@
 using namespace Utils;
 
 class DaskMeans : public KMeansBase {
-private:
+protected:
     BallTree* data_index;
     BallTree* centroid_index;
     std::vector<double> inner_bound;
@@ -23,7 +23,7 @@ public:
 
     ~DaskMeans() override;
 
-    void run();
+    void run() override;
 
     void output(const std::string& file_path) override;
 
