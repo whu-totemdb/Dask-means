@@ -18,8 +18,8 @@ void Experiment::test_Lloyd() {
     std::string output_path = "/home/lzp/cs/dask-means-cpp/output/lloyd_output.txt";
 
     Lloyd* lloyd = new Lloyd();
+    // lloyd->initParameters(30, 2, 3);
     lloyd->initParameters(30, 2, 3);
-    // lloyd->initParameters(8, 2, 4);
     lloyd->load(data_path);
     lloyd->run();
     lloyd->output(output_path);

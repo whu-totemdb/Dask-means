@@ -93,7 +93,7 @@ void KMeansBase::initializeCentroids() {
     std::set<int> selected_ids;
 
     for (int i = 0; i < k; i ++) {
-        // unsigned seed = 42;      // fixed seed
+        // unsigned seed = 4;      // fixed seed
         // std::mt19937 gen(seed);
         std::random_device seed;    // random seed
         std::mt19937 gen(seed());
@@ -135,7 +135,7 @@ bool KMeansBase::hasConverged() {
     double sum_drift = 0.0;
     
     for (auto centroid : centroid_list) {
-        sum_drift += distance1(centroid->getCoordinate(), centroid->getOldCoordinate());
+        sum_drift += centroid->drift;
     }
 
     cout << "sum drift: " << sum_drift << endl;

@@ -15,6 +15,9 @@ public:
     int point_number = 0;
     std::vector<double> sum_vec;
 
+    // for debug
+    std::vector<int> tmp_list;
+
 public:
     Cluster(int cluster_id, int data_dimension);
 

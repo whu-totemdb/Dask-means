@@ -35,8 +35,6 @@ public:
     bool isLeaf() { return this->leaf; }
 
     void initLeafNode(std::vector<int> data_id_list, int size);
-    
-    void setAssigned(int id);
 
     void setSum();
 

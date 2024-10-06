@@ -36,11 +36,6 @@ void Node::initLeafNode(std::vector<int> data_id_list, int size) {
     centroid_id_for_data = std::vector(size, -1);
 }
 
-// assign the node to the centroid with the id given
-void Node::setAssigned(int id) {
-    centroid_id = id;
-}
-
 // set the sum_vector and point_number after building the ball-tree
 void Node::setSum() {    
     if (this->isLeaf()) {

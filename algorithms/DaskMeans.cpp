@@ -35,11 +35,11 @@ void DaskMeans::run() {
         setInnerBound();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
         updateCentroids();
-    } while (hasConverged());
+    } while (!hasConverged());
 }
 
 void DaskMeans::output(const std::string& file_path) {
-    std::ofstream file(file_path);
+    std::ofstream file(file_path, std::ios::app);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open file: " + file_path);
     }
@@ -52,7 +52,7 @@ void DaskMeans::output(const std::string& file_path) {
         for (size_t i = 0; i < data_id_list.size(); ++i) {
             file << data_id_list[i];
             if (i < data_id_list.size() - 1) {
-                    file << ", ";
+                file << ", ";
             }
         }
         file << "]}" << std::endl;
@@ -105,11 +105,10 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     }
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
-        if (node.centroid_id != -1) {
-            Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
-            old_cluster->dataOut(node.sum_vector, &node);
+        if (res[0]->id == node.centroid_id) {
+            return;
         }
-        node.setAssigned(res[0]->id);
+        assignToCluster(node, res[0]->id);
         Cluster* new_cluster = centroid_list[node.centroid_id]->getCluster();
         new_cluster->dataIn(node.sum_vector, &node);
         return;
@@ -117,9 +116,14 @@ void DaskMeans::assignLabels(Node& node, double ub) {
 
     if (!node.isLeaf()) {
         // 3. split the node into two child node
+        removeFromCluster(node, true);
         assignLabels(*node.leftChild, res[1]->dis + node.radius);
         assignLabels(*node.rightChild, res[1]->dis + node.radius);
     } else {
+        if (node.centroid_id != -1) {
+            Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
+            old_cluster->dataOut(node.sum_vector, &node);
+        }
         // 4. assign each point in leaf node
         for (int i = 0; i < node.point_number; i++) {
             // if the point is assigned before
@@ -147,5 +151,51 @@ void DaskMeans::updateCentroids() {
         Cluster* cluster = centroid->getCluster();
         std::vector<double> new_coordinate = divideVector(cluster->sum_vec, cluster->point_number);
         centroid->updateCoordinate(new_coordinate);
+    }
+}
+
+// assign a node and its child node to a centroid,
+// and remove all nodes from previous centroids is exist
+void DaskMeans::assignToCluster(Node& node, int centroid_id) {
+    if (node.centroid_id != -1) {
+        Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
+        old_cluster->dataOut(node.sum_vector, &node);
+    }
+
+    node.centroid_id = centroid_id;
+    if (node.isLeaf()) {
+        for (int i = 0; i < node.point_number; i++) {
+            int clu_id = node.centroid_id_for_data[i];
+            if (clu_id != -1) {
+                Cluster* old_cluster = centroid_list[clu_id]->getCluster();
+                old_cluster->dataOut(dataset[node.data_id_list[i]], node.data_id_list[i]);
+            }
+            node.centroid_id_for_data[i] = centroid_id;
+        }
+    } else {
+        assignToCluster(*node.leftChild, centroid_id);
+        assignToCluster(*node.rightChild, centroid_id);
+    }
+}
+
+// remove a node and all its child node from a cluster
+void DaskMeans::removeFromCluster(Node& node, bool flag) {
+    if (node.centroid_id == -1) {
+        return;
+    }
+
+    if (flag) {
+        Cluster* old_cluster = centroid_list[node.centroid_id]->getCluster();
+        old_cluster->dataOut(node.sum_vector, &node);
+    }
+
+    node.centroid_id = -1;
+    if (node.isLeaf()) {
+        for (int i = 0; i < node.point_number; i++) {
+            node.centroid_id_for_data[i] = -1;
+        }
+    } else {
+        assignToCluster(*node.leftChild, false);
+        assignToCluster(*node.rightChild, false);
     }
 }

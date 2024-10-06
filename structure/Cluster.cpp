@@ -49,15 +49,23 @@ void Cluster::dataIn(std::vector<double> data_in, Node* node) {
 }
 
 void Cluster::dataOut(std::vector<double> data_out, int data_id) {
-    sum_vec = subtractVector(sum_vec, data_out);
-    point_number -= 1;
-    auto new_end = std::remove(data_id_list.begin(), data_id_list.end(), data_id);
-    data_id_list.erase(new_end, data_id_list.end());
+    auto it = std::find(data_id_list.begin(), data_id_list.end(), data_id);
+    if (it != data_id_list.end()) {
+        auto new_end = std::remove(data_id_list.begin(), data_id_list.end(), data_id);
+        data_id_list.erase(new_end, data_id_list.end());
+
+        sum_vec = subtractVector(sum_vec, data_out);
+        point_number -= 1;
+    }
 }
 
 void Cluster::dataOut(std::vector<double> data_out, Node* node) {
-    sum_vec = subtractVector(sum_vec, data_out);
-    point_number -= node->point_number;
-    auto new_end = std::remove(node_list.begin(), node_list.end(), node);
-    node_list.erase(new_end, node_list.end());
+    auto it = std::find(node_list.begin(), node_list.end(), node);
+    if (it != node_list.end()) {
+        auto new_end = std::remove(node_list.begin(), node_list.end(), node);
+        node_list.erase(new_end, node_list.end());
+
+        sum_vec = subtractVector(sum_vec, data_out);
+        point_number -= node->point_number;
+    }
 }
