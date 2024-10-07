@@ -2,6 +2,7 @@
 #include "algorithms/DaskMeans.h"
 #include "algorithms/NoInB.h"
 #include "algorithms/NoKnn.h"
+#include "algorithms/NoBound.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -16,6 +17,8 @@ public:
     void test_NoInB();
 
     void test_NoKnn();
+
+    void test_NoBound();
 };
 
 void Experiment::test_Lloyd() {
@@ -75,3 +78,11 @@ void Experiment::test_NoKnn() {
     delete noKnn;
 }
 
+void Experiment::test_NoBound() {
+    double start_time, end_time;
+    start_time = clock();
+    MatrixOur dataset = load_data("/home/lzp/cs/dask-means-cpp/dataset/test.txt");
+    VectorXi labels = ball_k_means(dataset, 3, false, true);
+    end_time = clock();
+    cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+}
