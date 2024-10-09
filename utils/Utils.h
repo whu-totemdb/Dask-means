@@ -8,6 +8,7 @@
 #include "../structure/Centroid.h"
 #include "../structure/Node.h"
 #include "../structure/KnnRes.h"
+#include "../structure/KdTreeNode.h"
 
 namespace Utils {
     // get the distance of two vectors
@@ -36,33 +37,37 @@ namespace Utils {
 
     // find two farthest point to the center in dataset
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<std::vector<double>>& dataset, int data_scale);
+            const std::vector<std::vector<double>>& dataset, int data_scale);
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list);
+            const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list);
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        std::vector<Centroid*>& centroid_list, int data_scale);
+            std::vector<Centroid*>& centroid_list, int data_scale);
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
+            std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list);
 
     // ball-tree knn
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
-        const std::vector<std::vector<double>>& dataset);
+            const std::vector<std::vector<double>>& dataset);
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
-        std::vector<Centroid*>& centroid_list);
+            std::vector<Centroid*>& centroid_list);
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
-        const std::vector<std::vector<double>>& dataset);
+            const std::vector<std::vector<double>>& dataset);
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
-        std::vector<Centroid*>& centroid_list);
+            std::vector<Centroid*>& centroid_list);
 
     // knn that uses simple calculation, storing the result in res
     void calculate1nn(std::vector<double> point, KnnRes& res, 
-        const std::vector<std::vector<double>>& dataset);
+            const std::vector<std::vector<double>>& dataset);
     void calculate1nn(std::vector<double> point, KnnRes& res, 
-        std::vector<Centroid*>& centroid_list);
+            std::vector<Centroid*>& centroid_list);
     void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
-        const std::vector<std::vector<double>>& dataset);
+            const std::vector<std::vector<double>>& dataset);
     void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
-        std::vector<Centroid*>& centroid_list);
+            std::vector<Centroid*>& centroid_list);
+    
+    // kd-tree knn
+    void kdTree2nn(std::vector<double> point, KdTreeNode& root, std::vector<KnnRes*>& res, 
+            std::vector<Centroid*>& centroid_list);
 }
 
 #endif // UTILS_H

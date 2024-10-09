@@ -387,5 +387,35 @@ namespace Utils {
                 }
             }
         }
+    
+    void kdTree2nn(std::vector<double> point, KdTreeNode& root, std::vector<KnnRes*>& res, 
+            std::vector<Centroid*>& centroid_list) {
+        if (root.leaf) {
+            for (int id : root.data_id_list) {
+                double distance = distance1(point, centroid_list[id]->getCoordinate());
+                if (res[0]->id == -1) {
+                    res[0]->dis = distance;
+                    res[0]->id = id;
+                } else if (distance < res[0]->dis) {
+                    res[1]->id = res[0]->id;
+                    res[1]->dis = res[0]->dis;
+                    res[0]->id = id;
+                    res[0]->dis = distance;
+                } else if (distance < res[1]->dis) {
+                    res[1]->id = id;
+                    res[1]->dis = distance;
+                }
+            }
+            return;
+        }
+        // if is not leaf node, check whether the child nodes in the search area
+        int dim = root.current_dimension;
+        if (point[dim] <= root.split_point[dim]) {
+            kdTree2nn(point, *(root.leftChild), res, centroid_list);
+        }
+        if (res[1]->id == -1) {
+            kdTree2nn(point, *(root.rightChild), res, centroid_list);
+        }
+    }
 
 }
