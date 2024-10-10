@@ -41,10 +41,10 @@ public:
 
 protected:
     double getUpperBound(const std::vector<std::vector<double>>& dataset,
-            KdTreeNode& node, std::vector<double> point);
+            std::vector<double> point);
 
     double getLowerBound(const std::vector<std::vector<double>>& dataset,
-            KdTreeNode& node, std::vector<double> point);
+            std::vector<double> point);
 };
 
 #endif

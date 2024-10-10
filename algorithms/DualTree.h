@@ -20,14 +20,14 @@ public:
     
     ~DualTree() override;
 
+    void initParameters(int data_scale, int data_dimension, int k) override;
+
     void run() override;
 
-    void output(const std::string& file_path) override;
-
 protected:
-    void buildDataIndex(int capacity = 1);
+    void buildDataIndex(int k, int capacity);
 
-    void buildCentroidIndex(int capacity = 1);
+    void buildCentroidIndex(int k, int capacity = 1);
 
     void setInnerBound();
 
@@ -35,13 +35,13 @@ protected:
     
     void updateCentroids() override;
 
-    void assignToCluster(KdTreeNode& node, int centroid_id);
-
     void assignPoint(KdTreeNode& node, int index);
 
     void setAssignment(KdTreeNode& node);
 
     void updateMaxDrift();
+
+    void updateCluster(KdTreeNode& node);
 };
 
 #endif

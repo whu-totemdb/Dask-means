@@ -83,16 +83,16 @@ void DaskMeans::setInnerBound() {
     // using index ball-tree knn to set inner bound
     this->inner_bound = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
-        if (inner_bound[i] >= 0) {
-            continue;
-        }
+        // if (inner_bound[i] >= 0) {
+        //     continue;
+        // }
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
             res[i] = new KnnRes(ub[i]);
         }
         ballTree2nn(centroid_list[i]->getCoordinate(), *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
-        inner_bound[res[1]->id] = res[1]->dis;
+        // inner_bound[res[1]->id] = res[1]->dis;
     }
 }
 

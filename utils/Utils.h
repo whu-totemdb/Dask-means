@@ -68,6 +68,12 @@ namespace Utils {
     // kd-tree knn
     void kdTree2nn(std::vector<double> point, KdTreeNode& root, std::vector<KnnRes*>& res, 
             std::vector<Centroid*>& centroid_list);
+
+    // find the dimension with the maximum variance
+    int findBestDimension(const std::vector<std::vector<double>>& dataset, 
+            const std::vector<int>& point_id_list);
+    int findBestDimension(std::vector<Centroid*>& centroid_list, 
+            const std::vector<int>& centroid_id_list);
 }
 
 #endif // UTILS_H

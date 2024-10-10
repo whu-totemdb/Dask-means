@@ -8,8 +8,6 @@ using namespace Utils;
 DualTree::DualTree(int capacity, int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {
         this->capacity = capacity;
-        point_ub = std::vector(data_scale, std::numeric_limits<double>::max());
-        point_lb = std::vector(data_scale, std::numeric_limits<double>::max());
         max_drift = 0;
     }
 
@@ -20,41 +18,50 @@ DualTree::~DualTree() {
     centroid_index = nullptr;
 }
 
+void DualTree::initParameters(int data_scale, int data_dimension, int k) {
+    this->data_scale = data_scale;
+    this->data_dimension = data_dimension;
+    this->k = k;
+    this->labels.assign(this->data_scale, 0);
+    point_ub = std::vector(data_scale, std::numeric_limits<double>::max());
+    point_lb = std::vector(data_scale, std::numeric_limits<double>::max());
+}
+
 void DualTree::run() {
-
+    buildDataIndex(k, this->capacity);
+    initializeCentroids();
+    do {
+        buildCentroidIndex(k);
+        setInnerBound();
+        assignLabels(*data_index->root);
+        updateCentroids();
+        output("/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt");
+    } while (!hasConverged());
 }
 
-void DualTree::output(const std::string& file_path) {
-
-}
-
-void DualTree::buildDataIndex(int capacity) {
-    data_index = new KdTree(capacity);
+void DualTree::buildDataIndex(int k, int capacity) {
+    data_index = new KdTree(k, capacity);
     data_index->buildKdTree(dataset, data_scale);
 }
 
-void DualTree::buildCentroidIndex(int capacity) {
+void DualTree::buildCentroidIndex(int k, int capacity) {
     if (centroid_index != nullptr) {
         delete centroid_index;
         centroid_index = nullptr;
     }
-    centroid_index = new KdTree(capacity);
+    centroid_index = new KdTree(k, capacity);
     centroid_index->buildKdTree(centroid_list, k);
 }
 
 void DualTree::setInnerBound() {
     this->inner_bound = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
-        if (inner_bound[i] >= 0) {
-            continue;
-        }
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
             res[i] = new KnnRes();
         }
         calculate2nn(centroid_list[i]->getCoordinate(), res, centroid_list);
         inner_bound[i] = res[1]->dis;
-        inner_bound[res[1]->id] = res[1]->dis;
     }
 }
 
@@ -66,38 +73,59 @@ void DualTree::assignLabels(KdTreeNode& node) {
         node.lb -= max_drift;
 
         // strategy one and strategy three
-        if (node.ub <= node.lb || node.ub < inner_bound[node.centroid_id] / 2) {
-            return;
-        }
+        // if (node.ub <= node.lb)
+        //     return;
+        // if (node.ub < inner_bound[node.centroid_id] / 2)
+        //     return;
+
         
         node.resetBound(dataset, *centroid_index->root, centroid_list);
-        if (node.ub <= node.lb || node.ub < inner_bound[node.centroid_id] / 2) {
+        // if (node.ub <= node.lb)
+        //     return;
+        if (node.ub < inner_bound[node.centroid_id] / 2)
             return;
-        }
-
-        if (!node.leaf) {
-            assignLabels(*node.leftChild);
-            assignLabels(*node.rightChild);
-        } else {
-            for (int id : node.data_id_list) {
-                assignPoint(node, id);
-            }
-        }
-
-    } else {
+    }
     // else assign all data point covered by the node, and then set assignment
-        if (!node.leaf) {
-            assignLabels(*node.leftChild);
-            assignLabels(*node.rightChild);
-        } else {
-            for (int id : node.data_id_list) {
-                assignPoint(node, id);
-            }
+    if (!node.leaf) {
+        assignLabels(*node.leftChild);
+        assignLabels(*node.rightChild);
+    } else {
+        for (int id = 0; id < node.data_id_list.size(); id++) {
+            assignPoint(node, id);
         }
-        setAssignment(node);
+    }
+    setAssignment(node);
+    if (node.centroid_id != -1) {
+        node.resetBound(dataset, *centroid_index->root, centroid_list);
     }
 }
 
+void DualTree::updateCentroids() {
+    // clear cluster
+    for (auto cent : centroid_list) {
+        cent->cluster->clear();
+    }
+
+    // assign all point to a cluster
+    updateCluster(*data_index->root);
+
+    for (auto centroid : centroid_list) {
+        std::vector<int> data_id_list = centroid->getCluster()->getDataIdList();
+        int data_num = data_id_list.size();
+
+        std::vector<double> new_coordinate(data_dimension, 0);
+        for (int data_id : data_id_list) {
+            new_coordinate = addVector(new_coordinate, dataset[data_id]);
+        }
+        new_coordinate = divideVector(new_coordinate, data_num);
+
+        centroid->updateCoordinate(new_coordinate);
+
+        max_drift = std::max(centroid->max_drift, max_drift);
+    }
+}
+
+// assign all data points covered by the node to the nearest centroid
 void DualTree::assignPoint(KdTreeNode& node, int index) {
     int point_id = node.data_id_list[index];
     int centroid_id = node.centroid_id_for_data[index];
@@ -107,26 +135,34 @@ void DualTree::assignPoint(KdTreeNode& node, int index) {
         point_ub[point_id] += centroid_list[centroid_id]->drift;
         point_lb[point_id] -= max_drift;
 
-        if (point_ub[point_id] <= point_lb[point_id] ||
-                point_ub[point_id] < inner_bound[node.centroid_id] / 2) {
-            return;
-        }
+        // if (point_ub[point_id] <= point_lb[point_id] ||
+        //         point_ub[point_id] < inner_bound[node.centroid_id] / 2) {
+        //     return;
+        // }
     }
 
     double nearest_dis = std::numeric_limits<double>::max();
+    double second_nearest_dis = std::numeric_limits<double>::max();
+    int nearest_id = -1;
     for (int i = 0; i < k; i++) {
-        double dis = distance1(dataset[point_id], centroid_list[centroid_id]->getCoordinate());
-        if (dis < nearest_dis) {
-            // set point ub and lb
-            point_lb[point_id] = nearest_dis;
-            point_ub[point_id] = dis;
-            // assign
+        double dis = distance1(dataset[point_id], centroid_list[i]->getCoordinate());
+
+        if (dis <= nearest_dis) {
+            second_nearest_dis = nearest_dis;
             nearest_dis = dis;
-            node.centroid_id_for_data[index] = i;
+            nearest_id = i;
+        } else if (dis < second_nearest_dis) {
+            second_nearest_dis = dis;
         }
     }
+    // set point ub and lb
+    point_lb[point_id] = second_nearest_dis;
+    point_ub[point_id] = nearest_dis;
+
+    node.centroid_id_for_data[index] = nearest_id;
 }
 
+// assign a node to a cluster if all children (or data points) are assigned to the same cluster
 void DualTree::setAssignment(KdTreeNode& node) {
     if (!node.leaf) {
         if (node.leftChild->centroid_id == node.rightChild->centroid_id) {
@@ -150,4 +186,16 @@ void DualTree::updateMaxDrift() {
     for (auto cent : centroid_list) {
         max_drift = std::max(max_drift, cent->max_drift);
     }
+}
+
+void DualTree::updateCluster(KdTreeNode& node) {
+    if (node.leaf) {
+        for (int i = 0; i < node.point_number; i++) {
+            Cluster* clu = centroid_list[node.centroid_id_for_data[i]]->cluster;
+            clu->data_id_list.push_back(node.data_id_list[i]);
+        }
+        return;
+    }
+    updateCluster(*node.leftChild);
+    updateCluster(*node.rightChild);
 }

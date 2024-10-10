@@ -65,7 +65,8 @@ void KMeansBase::load(const std::string& file_path) {
 
 // output k cluster with the schema as {cluster_id: int, point_id_list: list()}
 void KMeansBase::output(const std::string& file_path) {
-    std::ofstream file(file_path);
+    std::ofstream file(file_path, std::ios::app);
+    // std::ofstream file(file_path);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open file: " + file_path);
     }
@@ -93,10 +94,10 @@ void KMeansBase::initializeCentroids() {
     std::set<int> selected_ids;
 
     for (int i = 0; i < k; i ++) {
-        // unsigned seed = 6;      // fixed seed
-        // std::mt19937 gen(seed);
-        std::random_device seed;    // random seed
-        std::mt19937 gen(seed());
+        unsigned seed = 6;      // fixed seed
+        std::mt19937 gen(seed);
+        // std::random_device seed;    // random seed
+        // std::mt19937 gen(seed());
         std::uniform_int_distribution<> distrib(0, data_scale - 1);
 
         int point_id;

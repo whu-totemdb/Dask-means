@@ -1,7 +1,9 @@
 #include "KdTree.h"
 #include <algorithm>
+#include "../utils/Utils.h"
 
-KdTree::KdTree(int dimensions) : data_dimension(dimensions) {
+KdTree::KdTree(int dimensions, int capacity)
+        : capacity(capacity), data_dimension(dimensions) {
     root = new KdTreeNode();
 }
 
@@ -35,7 +37,7 @@ void KdTree::buildKdTree1(KdTreeNode& node, std::vector<std::vector<double>>& da
     }
 
     // 1.find the dimension with the maximum variance
-    node.current_dimension = findBestDimension(dataset, point_id_list);
+    node.current_dimension = Utils::findBestDimension(dataset, point_id_list);
     int axis = node.current_dimension;
 
     // 2.sort all point by the dimension with the greatest variance
@@ -45,10 +47,10 @@ void KdTree::buildKdTree1(KdTreeNode& node, std::vector<std::vector<double>>& da
               });
 
     // 3.split the point_id_list into two parts
-    int median_index = size / 2;
+    int median_index = size / 2 - 1;
     node.split_point = dataset[point_id_list[median_index]];
 
-    std::vector<int> left_points_ids(point_id_list.begin(), point_id_list.begin() + median_index);
+    std::vector<int> left_points_ids(point_id_list.begin(), point_id_list.begin() + median_index + 1);
     std::vector<int> right_points_ids(point_id_list.begin() + median_index + 1, point_id_list.end());
 
     node.leftChild = new KdTreeNode();
@@ -67,7 +69,7 @@ void KdTree::buildKdTree1(KdTreeNode& node, std::vector<Centroid*>& centroid_lis
     }
 
     // 1.find the dimension with the maximum variance
-    node.current_dimension = findBestDimension(centroid_list, centroid_id_list);
+    node.current_dimension = Utils::findBestDimension(centroid_list, centroid_id_list);
     int axis = node.current_dimension;
 
     // 2.sort all point by the dimension with the greatest variance
@@ -77,92 +79,14 @@ void KdTree::buildKdTree1(KdTreeNode& node, std::vector<Centroid*>& centroid_lis
               });
 
     // 3.split the point_id_list into two parts
-    int median_index = size / 2;
+    int median_index = size / 2 - 1;
     node.split_point = centroid_list[centroid_id_list[median_index]]->getCoordinate();
 
-    std::vector<int> left_points_ids(centroid_id_list.begin(), centroid_id_list.begin() + median_index);
+    std::vector<int> left_points_ids(centroid_id_list.begin(), centroid_id_list.begin() + median_index + 1);
     std::vector<int> right_points_ids(centroid_id_list.begin() + median_index + 1, centroid_id_list.end());
 
     node.leftChild = new KdTreeNode();
     node.rightChild = new KdTreeNode();
     buildKdTree1(*(node.leftChild), centroid_list, left_points_ids);
     buildKdTree1(*(node.rightChild), centroid_list, right_points_ids);
-}
-
-// find the dimension with the maximum variance
-int KdTree::findBestDimension(const std::vector<std::vector<double>>& dataset, 
-        const std::vector<int>& point_id_list) {
-    int num_dimensions = dataset[0].size();
-    std::vector<double> variances(num_dimensions, 0.0);
-
-    // get variance in each dimension
-    for (int d = 0; d < num_dimensions; ++d) {
-        double mean = 0.0;
-        int count = point_id_list.size();
-
-        // mean
-        for (int index : point_id_list) {
-            mean += dataset[index][d];
-        }
-        mean /= count;
-
-        // variance
-        double variance = 0.0;
-        for (int index : point_id_list) {
-            variance += (dataset[index][d] - mean) * (dataset[index][d] - mean);
-        }
-        variance /= count;
-
-        variances[d] = variance;
-    }
-
-    int best_dimension = 0;
-    double max_variance = variances[0];
-    for (int d = 1; d < num_dimensions; ++d) {
-        if (variances[d] > max_variance) {
-            max_variance = variances[d];
-            best_dimension = d;
-        }
-    }
-
-    return best_dimension;
-}
-
-int KdTree::findBestDimension(std::vector<Centroid*>& centroid_list, 
-        const std::vector<int>& centroid_id_list) {
-    int num_dimensions = centroid_list[0]->getCoordinate().size();
-    std::vector<double> variances(num_dimensions, 0.0);
-
-    // get variance in each dimension
-    for (int d = 0; d < num_dimensions; ++d) {
-        double mean = 0.0;
-        int count = centroid_id_list.size();
-
-        // mean
-        for (int index : centroid_id_list) {
-            mean += centroid_list[index]->getCoordinate()[d];
-        }
-        mean /= count;
-
-        // variance
-        double variance = 0.0;
-        for (int index : centroid_id_list) {
-            variance += (centroid_list[index]->getCoordinate()[d] - mean) 
-                        * (centroid_list[index]->getCoordinate()[d] - mean);
-        }
-        variance /= count;
-
-        variances[d] = variance;
-    }
-
-    int best_dimension = 0;
-    double max_variance = variances[0];
-    for (int d = 1; d < num_dimensions; ++d) {
-        if (variances[d] > max_variance) {
-            max_variance = variances[d];
-            best_dimension = d;
-        }
-    }
-
-    return best_dimension;
 }

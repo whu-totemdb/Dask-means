@@ -23,11 +23,14 @@ set(SOURCES
     algorithms/DaskMeans.cpp
     algorithms/NoInB.cpp
     algorithms/NoKnn.cpp
+    algorithms/DualTree.cpp
     interface.cpp
     structure/BallTree.cpp
     structure/Node.cpp
     structure/Centroid.cpp
     structure/Cluster.cpp
+    structure/KdTree.cpp
+    structure/KdTreeNode.cpp
 )
 
 add_executable(DaskMeans ${SOURCES})

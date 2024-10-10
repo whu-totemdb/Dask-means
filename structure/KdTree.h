@@ -12,7 +12,7 @@ public:
     int capacity = 1;
 
 public:
-    KdTree(int dimensions);
+    KdTree(int dimensions, int capacity);
     ~KdTree();
 
     void buildKdTree(std::vector<std::vector<double>>& dataset, int data_scale);
@@ -25,12 +25,6 @@ public:
     void buildKdTree1(KdTreeNode& node, std::vector<Centroid*>& centroid_list, 
             std::vector<int> centroid_id_list);
 
-private:
-    int findBestDimension(const std::vector<std::vector<double>>& dataset, 
-            const std::vector<int>& point_id_list);
-
-    int findBestDimension(std::vector<Centroid*>& centroid_list, 
-            const std::vector<int>& centroid_id_list);
 };
 
 #endif

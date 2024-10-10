@@ -3,6 +3,7 @@
 #include "algorithms/NoInB.h"
 #include "algorithms/NoKnn.h"
 #include "algorithms/NoBound.h"
+#include "algorithms/DualTree.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -19,6 +20,8 @@ public:
     void test_NoKnn();
 
     void test_NoBound();
+
+    void test_DualTree();
 };
 
 void Experiment::test_Lloyd() {
@@ -103,4 +106,22 @@ void Experiment::test_NoBound() {
     VectorXi labels = ball_k_means(dataset, 3, true, true);
     end_time = clock();
     cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+}
+
+void Experiment::test_DualTree() {
+    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
+    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt";
+
+    DualTree* dual_tree = new DualTree(2);
+    dual_tree->initParameters(30, 2, 3);
+    dual_tree->load(data_path);
+    // double start_time, end_time;
+    // start_time = clock();
+    dual_tree->run();
+    // end_time = clock();
+    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+    dual_tree->output(output_path);
+
+    delete dual_tree;
 }

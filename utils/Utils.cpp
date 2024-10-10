@@ -337,7 +337,7 @@ namespace Utils {
     void calculate1nn(std::vector<double> point, KnnRes& res, 
         const std::vector<std::vector<double>>& dataset) {
             for (int i = 0; i < dataset.size(); i++) {
-                int dis = distance1(point, dataset[i]);
+                double dis = distance1(point, dataset[i]);
                 if (dis <= res.dis) {
                     res.dis = dis;
                     res.id = i;
@@ -348,7 +348,7 @@ namespace Utils {
     void calculate1nn(std::vector<double> point, KnnRes& res, 
         std::vector<Centroid*>& centroid_list) {
             for (int i = 0; i < centroid_list.size(); i++) {
-                int dis = distance1(point, centroid_list[i]->getCoordinate());
+                double dis = distance1(point, centroid_list[i]->getCoordinate());
                 if (dis <= res.dis) {
                     res.dis = dis;
                     res.id = i;
@@ -359,7 +359,7 @@ namespace Utils {
     void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
         const std::vector<std::vector<double>>& dataset) {
             for (int i = 0; i < dataset.size(); i++) {
-                int dis = distance1(point, dataset[i]);
+                double dis = distance1(point, dataset[i]);
                 if (dis <= res[0]->dis) {
                     res[1]->dis = res[0]->dis;
                     res[1]->id = res[0]->id;
@@ -375,7 +375,7 @@ namespace Utils {
     void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
         std::vector<Centroid*>& centroid_list) {
             for (int i = 0; i < centroid_list.size(); i++) {
-                int dis = distance1(point, centroid_list[i]->getCoordinate());
+                double dis = distance1(point, centroid_list[i]->getCoordinate());
                 if (dis <= res[0]->dis) {
                     res[1]->dis = res[0]->dis;
                     res[1]->id = res[0]->id;
@@ -410,12 +410,89 @@ namespace Utils {
         }
         // if is not leaf node, check whether the child nodes in the search area
         int dim = root.current_dimension;
-        if (point[dim] <= root.split_point[dim]) {
+        if (point[dim] <= root.split_point[dim] || res[1]->id == -1) {
             kdTree2nn(point, *(root.leftChild), res, centroid_list);
         }
-        if (res[1]->id == -1) {
+        if (point[dim] > root.split_point[dim] || res[1]->id == -1) {
             kdTree2nn(point, *(root.rightChild), res, centroid_list);
         }
+    }
+
+    int findBestDimension(const std::vector<std::vector<double>>& dataset, 
+            const std::vector<int>& point_id_list) {
+        int num_dimensions = dataset[0].size();
+        std::vector<double> variances(num_dimensions, 0.0);
+
+        // get variance in each dimension
+        for (int d = 0; d < num_dimensions; ++d) {
+            double mean = 0.0;
+            int count = point_id_list.size();
+
+            // mean
+            for (int index : point_id_list) {
+                mean += dataset[index][d];
+            }
+            mean /= count;
+
+            // variance
+            double variance = 0.0;
+            for (int index : point_id_list) {
+                variance += (dataset[index][d] - mean) * (dataset[index][d] - mean);
+            }
+            variance /= count;
+
+            variances[d] = variance;
+        }
+
+        int best_dimension = 0;
+        double max_variance = variances[0];
+        for (int d = 1; d < num_dimensions; ++d) {
+            if (variances[d] > max_variance) {
+                max_variance = variances[d];
+                best_dimension = d;
+            }
+        }
+
+        return best_dimension;
+    }
+
+    int findBestDimension(std::vector<Centroid*>& centroid_list, 
+            const std::vector<int>& centroid_id_list) {
+        int num_dimensions = centroid_list[0]->getCoordinate().size();
+        std::vector<double> variances(num_dimensions, 0.0);
+
+        // get variance in each dimension
+        for (int d = 0; d < num_dimensions; ++d) {
+            double mean = 0.0;
+            int count = centroid_id_list.size();
+
+            // mean
+            for (int index : centroid_id_list) {
+                mean += centroid_list[index]->getCoordinate()[d];
+            }
+            mean /= count;
+
+            // variance
+            double variance = 0.0;
+            for (int index : centroid_id_list) {
+                variance += (centroid_list[index]->getCoordinate()[d] - mean) 
+                            * (centroid_list[index]->getCoordinate()[d] - mean);
+            }
+            variance /= count;
+
+            variances[d] = variance;
+        }
+
+        int best_dimension = 0;
+        double max_variance = variances[0];
+        for (int d = 1; d < num_dimensions; ++d) {
+            if (variances[d] > max_variance) {
+                max_variance = variances[d];
+                best_dimension = d;
+            }
+        }
+
+        return best_dimension;
     }
 
 }
