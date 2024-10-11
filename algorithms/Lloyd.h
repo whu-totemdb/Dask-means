@@ -6,7 +6,7 @@
 
 class Lloyd : public KMeansBase {
 public:
-    Lloyd(int max_iterations = 30, double convergence_threshold = 0.001);
+    Lloyd(int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
 
     void run() override;
 

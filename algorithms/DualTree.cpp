@@ -2,6 +2,7 @@
 #include "../structure/KdTree.h"
 #include "../structure/KnnRes.h"
 #include "../utils/Utils.h"
+#include <iostream>
 
 using namespace Utils;
 
@@ -30,15 +31,35 @@ void DualTree::initParameters(int data_scale, int data_dimension, int k) {
 }
 
 void DualTree::run() {
+    int it = 0;     // iteration
+    double start_time, end_time;
+    start_time = clock();
+
+    // main loop
     buildDataIndex(k, this->capacity);
     initializeCentroids();
     do {
+        if (it != 0) {
+            start_time = clock();
+        }
         buildCentroidIndex(k);
         setInnerBound();
         assignLabels(*data_index->root);
         updateCentroids();
         // output("/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt");
-    } while (!hasConverged());
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        it++;
+    } while (!hasConverged() && it < max_iterations);
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run DualTree in " << total_runtime << " ms" << std::endl;
 }
 
 void DualTree::buildDataIndex(int k, int capacity) {

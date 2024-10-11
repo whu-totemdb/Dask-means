@@ -6,7 +6,7 @@
 
 class NoInB : public DaskMeans {
 public:
-    NoInB(int capacity, int max_iterations = 30, double convergence_threshold = 0.001);
+    NoInB(int capacity, int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
     ~NoInB();
 
     void run() override;

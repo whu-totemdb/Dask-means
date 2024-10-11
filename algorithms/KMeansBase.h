@@ -2,6 +2,8 @@
 #ifndef KMEANSBASE_H
 #define KMEANSBASE_H
 
+#define MAX_ITERATIONS 20
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -19,9 +21,10 @@ protected:
     int k;
     int max_iterations;
     double convergence_threshold;
+    std::vector<double> runtime;
 
 public:
-    KMeansBase(int max_iterations = 30, double convergence_threshold = 1e-4);
+    KMeansBase(int max_iterations = MAX_ITERATIONS, double convergence_threshold = 1e-4);
 
     virtual ~KMeansBase();
 

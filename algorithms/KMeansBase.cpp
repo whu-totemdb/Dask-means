@@ -11,7 +11,9 @@ using namespace Utils;
 using namespace std;
 
 KMeansBase::KMeansBase(int max_iterations, double convergence_threshold)
-    : max_iterations(max_iterations), convergence_threshold(convergence_threshold) {}
+    : max_iterations(max_iterations), convergence_threshold(convergence_threshold) {
+        runtime = std::vector(20, 0.0);
+    }
 
 KMeansBase::~KMeansBase() {
     for (Centroid* centroid : centroid_list) { delete centroid; }
@@ -139,6 +141,6 @@ bool KMeansBase::hasConverged() {
         sum_drift += centroid->drift;
     }
 
-    cout << "sum drift: " << sum_drift << endl;
+    // cout << "sum drift: " << sum_drift << endl;
     return sum_drift <= convergence_threshold;
 }

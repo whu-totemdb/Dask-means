@@ -994,11 +994,29 @@ VectorXi ball_k_means(MatrixOur& dataset, int k, bool isRing = false, bool detai
 }
 
 
-// int main(int argc, char* argv[]) {
-//     double start_time, end_time;
-//     start_time = clock();
-//     MatrixOur dataset = load_data("/home/lzp/cs/dask-means-cpp/dataset/test.txt");
-//     VectorXi labels = ball_k_means(dataset, 3, false, true);
-//     end_time = clock();
-//     cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-// }
+class NoBound {
+protected:
+    int data_scale;
+    int data_dimension;
+    int k;
+
+public:
+    NoBound() {}
+    ~NoBound() {}
+
+    void initParameters(int data_scale1, int data_dimension1, int k1) {
+        data_scale = data_scale1;
+        data_dimension = data_dimension1;
+        k = k1;
+    }
+
+    void run(const char* file_path) {
+        MatrixOur dataset = load_data(file_path);
+
+        double start_time, end_time;
+        start_time = clock();
+        VectorXi labels = ball_k_means(dataset, k, false, true);
+        end_time = clock();
+        cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+    }
+};

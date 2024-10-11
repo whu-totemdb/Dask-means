@@ -1,4 +1,5 @@
 #include "NoKnn.h"
+#include <iostream>
 
 NoKnn::NoKnn(int capacity, int max_iterations, double convergence_threshold)
     : DaskMeans(capacity, max_iterations, convergence_threshold) {}
@@ -6,14 +7,20 @@ NoKnn::NoKnn(int capacity, int max_iterations, double convergence_threshold)
 NoKnn::~NoKnn() {}
 
 void NoKnn::run() {
-    bool is_first_iter = true;
+    int it = 0;     // iteration
+    double start_time, end_time;
+    start_time = clock();
+
+    // main loop
     buildDataIndex(this->capacity);
     initializeCentroids();
     do {
+        if (it != 0) {
+            start_time = clock();
+        }
         buildCentroidIndex();
-        if (is_first_iter) {
+        if (it == 0) {
             ub = std::vector<double>(k, std::numeric_limits<double>::max());
-            is_first_iter = false;
         } else {
             for (int i = 0; i < k; i++) {
                 ub[i] = inner_bound[i] + centroid_list[i]->drift + centroid_list[i]->max_drift;
@@ -23,7 +30,20 @@ void NoKnn::run() {
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
         updateCentroids();
         // output("/home/lzp/cs/dask-means-cpp/output/NoKnn_output.txt");
-    } while (!hasConverged());
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        it++;
+    } while (!hasConverged() && it < max_iterations);
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run NoKnn in " << total_runtime << " ms" << std::endl;
+
 }
 
 void NoKnn::setInnerBound() {

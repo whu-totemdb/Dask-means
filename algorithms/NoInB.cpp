@@ -1,4 +1,5 @@
 #include "NoInB.h"
+#include <iostream>
 
 NoInB::NoInB(int capacity, int max_iterations, double convergence_threshold)
     : DaskMeans(capacity, max_iterations, convergence_threshold) {}
@@ -6,14 +7,35 @@ NoInB::NoInB(int capacity, int max_iterations, double convergence_threshold)
 NoInB::~NoInB() {}
 
 void NoInB::run() {
+    int it = 0;     // iteration
+    double start_time, end_time;
+    start_time = clock();
+
+    // main loop
     buildDataIndex(this->capacity);
     initializeCentroids();
     do {
+        if (it != 0) {
+            start_time = clock();
+        }
         buildCentroidIndex();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
         updateCentroids();
         // output("/home/lzp/cs/dask-means-cpp/output/NoInB_output.txt");
-    } while (!hasConverged());
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        it++;
+    } while (!hasConverged() && it < max_iterations);
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run NoInB in " << total_runtime << " ms" << std::endl;
+
 }
 
 void NoInB::assignLabels(Node& node, double ub) {

@@ -2,17 +2,40 @@
 #include <limits>
 #include <cmath>
 #include <Utils.h>
+#include <iostream>
+
 using namespace Utils;
 
 Lloyd::Lloyd(int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {}
 
 void Lloyd::run() {
+    int it = 0;     // iteration
+    double start_time, end_time;
+    start_time = clock();
+
+    // main loop
     initializeCentroids();
     do {
+        if (it != 0) {
+            start_time = clock();
+        }
         assignLabels();
         updateCentroids();
-    } while (!hasConverged());
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        it++;
+    } while (!hasConverged() && it < max_iterations);
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run Lloyd in " << total_runtime << " ms" << std::endl;
+
 }
 
 void Lloyd::assignLabels() {

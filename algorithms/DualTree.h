@@ -16,7 +16,7 @@ protected:
     double max_drift;
 
 public:
-    DualTree(int capacity, int max_iterations = 30, double convergence_threshold = 0.001);
+    DualTree(int capacity, int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
     
     ~DualTree() override;
 

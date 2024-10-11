@@ -19,7 +19,7 @@ protected:
     int capacity;
 
 public:
-    DaskMeans(int capacity, int max_iterations = 30, double convergence_threshold = 0.001);
+    DaskMeans(int capacity, int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
 
     ~DaskMeans() override;
 

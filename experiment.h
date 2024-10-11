@@ -7,8 +7,19 @@
 #include "structure/BallTree.h"
 
 class Experiment {
+protected:
+    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/lloyd_output.txt";
+
+    int leaf_capacity = 2;
+    int data_scale;
+    int data_dimension;
+    int k;
+
 public:
     Experiment() {}
+    Experiment(int data_scale, int data_dimension, int k)
+        : data_scale(data_scale), data_dimension(data_dimension), k(k) {}
     ~Experiment() {}
 
     void test_Lloyd();
@@ -25,103 +36,59 @@ public:
 };
 
 void Experiment::test_Lloyd() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/lloyd_output.txt";
-
+    cout << "=============starting Lloyd=============" << endl;
     Lloyd* lloyd = new Lloyd();
-    // lloyd->initParameters(30, 2, 3);
-    lloyd->initParameters(30, 2, 3);
+    lloyd->initParameters(data_scale, data_dimension, k);
     lloyd->load(data_path);
-    // double start_time, end_time;
-    // start_time = clock();
     lloyd->run();
-    // end_time = clock();
-    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-    lloyd->output(output_path);
-
-    // delete lloyd;
+    // lloyd->output(output_path);
+    delete lloyd;
 }
 
 void Experiment::test_dask_means() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/dask_output.txt";
-
-
-    DaskMeans* dask_means = new DaskMeans(2);
-    dask_means->initParameters(30, 2, 3);
+    cout << "=============starting Dask-means=============" << endl;
+    DaskMeans* dask_means = new DaskMeans(leaf_capacity);
+    dask_means->initParameters(data_scale, data_dimension, k);
     dask_means->load(data_path);
-    // double start_time, end_time;
-    // start_time = clock();
     dask_means->run();
-    // end_time = clock();
-    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-    dask_means->output(output_path);
-
+    // dask_means->output(output_path);
     delete dask_means;
 }
 
 void Experiment::test_NoInB() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/NoInB_output.txt";
-
-    NoInB* noInB = new NoInB(2);
-    noInB->initParameters(30, 2, 3);
+    cout << "=============starting NoInB=============" << endl;
+    NoInB* noInB = new NoInB(leaf_capacity);
+    noInB->initParameters(data_scale, data_dimension, k);
     noInB->load(data_path);
-    // double start_time, end_time;
-    // start_time = clock();
     noInB->run();
-    // end_time = clock();
-    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-    noInB->output(output_path);
-
+    // noInB->output(output_path);
     delete noInB;
 }
 
 void Experiment::test_NoKnn() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/NoKnn_output.txt";
-
-    NoKnn* noKnn = new NoKnn(2);
-    noKnn->initParameters(30, 2, 3);
+    cout << "=============starting NoKnn=============" << endl;
+    NoKnn* noKnn = new NoKnn(leaf_capacity);
+    noKnn->initParameters(data_scale, data_dimension, k);
     noKnn->load(data_path);
-    // double start_time, end_time;
-    // start_time = clock();
     noKnn->run();
-    // end_time = clock();
-    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-    noKnn->output(output_path);
-
+    // noKnn->output(output_path);
     delete noKnn;
 }
 
 void Experiment::test_NoBound() {
-    MatrixOur dataset = load_data("/home/lzp/cs/dask-means-cpp/dataset/test.txt");
-    
-    double start_time, end_time;
-    start_time = clock();
-    VectorXi labels = ball_k_means(dataset, 3, true, true);
-    end_time = clock();
-    cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+    cout << "=============starting NoBound=============" << endl;
+    NoBound* no_bound = new NoBound();
+    no_bound->initParameters(data_scale, data_dimension, k);
+    no_bound->run(data_path.c_str());
+    delete no_bound;
 }
 
 void Experiment::test_DualTree() {
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    // std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/ball-tree.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt";
-
-    DualTree* dual_tree = new DualTree(2);
-    dual_tree->initParameters(30, 2, 3);
+    cout << "=============starting DualTree=============" << endl;
+    DualTree* dual_tree = new DualTree(leaf_capacity);
+    dual_tree->initParameters(data_scale, data_dimension, k);
     dual_tree->load(data_path);
-    // double start_time, end_time;
-    // start_time = clock();
     dual_tree->run();
-    // end_time = clock();
-    // cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
-    dual_tree->output(output_path);
-
+    // dual_tree->output(output_path);
     delete dual_tree;
 }

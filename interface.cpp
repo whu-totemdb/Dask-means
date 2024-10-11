@@ -4,12 +4,12 @@ using namespace std;
 
 
 int main(){
-    Experiment* experiment = new Experiment();
+    Experiment* experiment = new Experiment(30, 2, 3);
     experiment->test_Lloyd();
     experiment->test_dask_means();
     experiment->test_NoInB();
     experiment->test_NoKnn();
-    // experiment->test_NoBound();
+    experiment->test_NoBound();
     experiment->test_DualTree();
     return 0;
 }
