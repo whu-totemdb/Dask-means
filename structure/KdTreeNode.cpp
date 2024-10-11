@@ -5,12 +5,14 @@
 KdTreeNode::KdTreeNode() {
     ub = std::numeric_limits<double>::max();
     lb = std::numeric_limits<double>::max();
+    r = 0.0;
 }
 
 KdTreeNode::KdTreeNode(int current_dimension, std::vector<double> split_point)
     : current_dimension(current_dimension), split_point(split_point) {
         ub = std::numeric_limits<double>::max();
         lb = std::numeric_limits<double>::max();
+        r = 0.0;
     }
 
 KdTreeNode::~KdTreeNode() {
@@ -48,6 +50,10 @@ void KdTreeNode::initLeafNode(const std::vector<std::vector<double>>& dataset,
 
     int median_index = size / 2;
     split_point = dataset[point_id_list[median_index]];
+
+    for (int id : point_id_list) {
+        r = std::max(r, Utils::distance1(split_point, dataset[id]));
+    }
 }
 
 void KdTreeNode::resetBound(const std::vector<std::vector<double>>& dataset,

@@ -9,6 +9,8 @@ DualTree::DualTree(int capacity, int max_iterations, double convergence_threshol
     : KMeansBase(max_iterations, convergence_threshold) {
         this->capacity = capacity;
         max_drift = 0;
+        data_index = nullptr;
+        centroid_index = nullptr;
     }
 
 DualTree::~DualTree() {
@@ -35,7 +37,7 @@ void DualTree::run() {
         setInnerBound();
         assignLabels(*data_index->root);
         updateCentroids();
-        output("/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt");
+        // output("/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt");
     } while (!hasConverged());
 }
 
@@ -73,16 +75,14 @@ void DualTree::assignLabels(KdTreeNode& node) {
         node.lb -= max_drift;
 
         // strategy one and strategy three
-        // if (node.ub <= node.lb)
-        //     return;
-        // if (node.ub < inner_bound[node.centroid_id] / 2)
-        //     return;
+        if (node.ub + node.r <= node.lb)
+            return;
+        if (node.ub + node.r < inner_bound[node.centroid_id] / 2)
+            return;
 
         
         node.resetBound(dataset, *centroid_index->root, centroid_list);
-        // if (node.ub <= node.lb)
-        //     return;
-        if (node.ub < inner_bound[node.centroid_id] / 2)
+        if (node.ub + node.r < inner_bound[node.centroid_id] / 2)
             return;
     }
     // else assign all data point covered by the node, and then set assignment
@@ -135,10 +135,10 @@ void DualTree::assignPoint(KdTreeNode& node, int index) {
         point_ub[point_id] += centroid_list[centroid_id]->drift;
         point_lb[point_id] -= max_drift;
 
-        // if (point_ub[point_id] <= point_lb[point_id] ||
-        //         point_ub[point_id] < inner_bound[node.centroid_id] / 2) {
-        //     return;
-        // }
+        if (point_ub[point_id] <= point_lb[point_id])
+            return;
+        if (point_ub[point_id] < inner_bound[node.centroid_id] / 2)
+            return;
     }
 
     double nearest_dis = std::numeric_limits<double>::max();

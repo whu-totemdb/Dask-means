@@ -8,7 +8,10 @@ KdTree::KdTree(int dimensions, int capacity)
 }
 
 KdTree::~KdTree() {
-    delete root;
+    if (root != nullptr) {
+        delete root;
+        root = nullptr;
+    }
 }
 
 void KdTree::buildKdTree(std::vector<std::vector<double>>& dataset, int data_scale) {
@@ -49,6 +52,10 @@ void KdTree::buildKdTree1(KdTreeNode& node, std::vector<std::vector<double>>& da
     // 3.split the point_id_list into two parts
     int median_index = size / 2 - 1;
     node.split_point = dataset[point_id_list[median_index]];
+
+    for (int id : point_id_list) {
+        node.r = std::max(node.r, Utils::distance1(node.split_point, dataset[id]));
+    }
 
     std::vector<int> left_points_ids(point_id_list.begin(), point_id_list.begin() + median_index + 1);
     std::vector<int> right_points_ids(point_id_list.begin() + median_index + 1, point_id_list.end());

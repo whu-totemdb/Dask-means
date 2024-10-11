@@ -8,7 +8,12 @@ BallTree::BallTree() { root = new Node(); }
 
 BallTree::BallTree(int capacity): capacity(capacity) { root = new Node(); }
 
-BallTree::~BallTree() { delete root; }
+BallTree::~BallTree() {
+    if (root != nullptr) {
+        delete root;
+        root = nullptr;
+    }
+}
 
 void BallTree::buildBallTree(std::vector<std::vector<double>>& dataset, int data_scale) {
     createNode(dataset, data_scale, *root);

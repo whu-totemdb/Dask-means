@@ -18,6 +18,7 @@ public:
     // exclusive to kd-tree
     int current_dimension = -1;
     std::vector<double> split_point;
+    double r;
     int point_number = 0;
     std::vector<double> sum_vector;
 

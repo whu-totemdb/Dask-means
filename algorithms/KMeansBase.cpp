@@ -65,8 +65,8 @@ void KMeansBase::load(const std::string& file_path) {
 
 // output k cluster with the schema as {cluster_id: int, point_id_list: list()}
 void KMeansBase::output(const std::string& file_path) {
-    std::ofstream file(file_path, std::ios::app);
-    // std::ofstream file(file_path);
+    // std::ofstream file(file_path, std::ios::app);
+    std::ofstream file(file_path);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open file: " + file_path);
     }
