@@ -12,7 +12,7 @@ using namespace std;
 
 KMeansBase::KMeansBase(int max_iterations, double convergence_threshold)
     : max_iterations(max_iterations), convergence_threshold(convergence_threshold) {
-        runtime = std::vector(20, 0.0);
+        runtime = std::vector(MAX_ITERATIONS, 0.0);
     }
 
 KMeansBase::~KMeansBase() {
@@ -88,6 +88,26 @@ void KMeansBase::output(const std::string& file_path) {
     }
 
     file.close();
+}
+
+// write the runtime to the given file
+void KMeansBase::writeRuntime(const std::string& file_path) {
+    std::ofstream outFile(file_path, std::ios::out | std::ios::app);
+    if (!outFile) {
+        throw std::runtime_error("Unable to open file: " + file_path);
+    }
+    // write init time
+    outFile << init_time;
+    outFile << ",";
+    // write runtime in main loop
+    for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+        outFile << runtime[i];
+        if (i != MAX_ITERATIONS - 1) {
+            outFile << ",";
+        }
+    }
+    outFile << std::endl;
+    outFile.close();
 }
 
 // initialize all centroids randomly

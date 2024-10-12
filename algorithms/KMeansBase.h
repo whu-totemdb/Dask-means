@@ -22,6 +22,7 @@ protected:
     int max_iterations;
     double convergence_threshold;
     std::vector<double> runtime;
+    double init_time = 0.0;
 
 public:
     KMeansBase(int max_iterations = MAX_ITERATIONS, double convergence_threshold = 1e-4);
@@ -34,9 +35,11 @@ public:
 
     void load(const std::string& file_path);
 
-    virtual void run() = 0;
+    virtual void run() {};
 
     virtual void output(const std::string& file_path);
+
+    void writeRuntime(const std::string& file_path);
 
 protected:
     virtual void initializeCentroids();

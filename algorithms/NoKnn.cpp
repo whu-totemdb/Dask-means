@@ -11,13 +11,17 @@ void NoKnn::run() {
     double start_time, end_time;
     start_time = clock();
 
-    // main loop
     buildDataIndex(this->capacity);
     initializeCentroids();
+
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "build index and initialize in " << init_time << " s" << std::endl;
+
+    // main loop
     do {
-        if (it != 0) {
-            start_time = clock();
-        }
+        start_time = clock();
+
         buildCentroidIndex();
         if (it == 0) {
             ub = std::vector<double>(k, std::numeric_limits<double>::max());
@@ -32,8 +36,8 @@ void NoKnn::run() {
         // output("/home/lzp/cs/dask-means-cpp/output/NoKnn_output.txt");
 
         end_time = clock();
-        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
     } while (!hasConverged() && it < max_iterations);
 
@@ -42,7 +46,7 @@ void NoKnn::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
-    std::cout << "successfully run NoKnn in " << total_runtime << " ms" << std::endl;
+    std::cout << "successfully run NoKnn in " << total_runtime << " s" << std::endl;
 
 }
 
@@ -50,16 +54,16 @@ void NoKnn::setInnerBound() {
     // using simple distance calculation to set inner bound
     this->inner_bound = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
-        if (inner_bound[i] >= 0) {
-            continue;
-        }
+        // if (inner_bound[i] >= 0) {
+        //     continue;
+        // }
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
             res[i] = new KnnRes(ub[i]);
         }
-        calculate2nn(centroid_list[i]->getCoordinate(), res, centroid_list);
+        // calculate2nn(centroid_list[i]->getCoordinate(), res, centroid_list);
+        ballTree2nn(centroid_list[i]->getCoordinate(), *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
-        inner_bound[res[1]->id] = res[1]->dis;
     }
 }
 

@@ -25,13 +25,16 @@ void DaskMeans::run() {
     double start_time, end_time;
     start_time = clock();
 
-    // main loop
     buildDataIndex(this->capacity);
     initializeCentroids();
+
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "build index and initialize in " << init_time << " s" << std::endl;
+
+    // main loop
     do {
-        if (it != 0) {
-            start_time = clock();
-        }
+        start_time = clock();
         buildCentroidIndex();
         if (it == 0) {
             ub = std::vector<double>(k, std::numeric_limits<double>::max());
@@ -41,13 +44,25 @@ void DaskMeans::run() {
             }
         }
         setInnerBound();
+        // end_time = clock();
+        // std::cout << "buildCentroidIndex() && setInnerBound(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
+        // end_time = clock();
+        // std::cout << "assignLabels(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         updateCentroids();
-        // output("/home/lzp/cs/dask-means-cpp/output/dask_output.txt");
+        // end_time = clock();
+        // std::cout << "updateCentroids(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
 
         end_time = clock();
-        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
     } while (!hasConverged() && it < max_iterations);
 
@@ -56,7 +71,7 @@ void DaskMeans::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
-    std::cout << "successfully run Dask-means in " << total_runtime << " ms" << std::endl;
+    std::cout << "successfully run Dask-means in " << total_runtime << " s" << std::endl;
 }
 
 void DaskMeans::output(const std::string& file_path) {
@@ -116,10 +131,15 @@ void DaskMeans::setInnerBound() {
 
 void DaskMeans::assignLabels(Node& node, double ub) {
     // 1. if the node is assigned before (pruning 1)
-    if (node.centroid_id != -1  && 
-        distance1(node.pivot, centroid_list[node.centroid_id]->getCoordinate()) 
-        + node.radius < inner_bound[node.centroid_id] / 2) 
-        { return; }
+    // if (node.centroid_id != -1  && 
+    //     distance1(node.pivot, centroid_list[node.centroid_id]->getCoordinate()) 
+    //     + node.radius < inner_bound[node.centroid_id] / 2) 
+    //     { return; }
+    if (node.centroid_id != -1) {
+        node.ub += centroid_list[node.centroid_id]->drift;
+        if (node.ub < inner_bound[node.centroid_id] / 2)
+            return;
+    }
 
     // 2. find two nearest centroid for the node (pruning 2)
     std::vector<KnnRes*> res(2);
@@ -127,6 +147,10 @@ void DaskMeans::assignLabels(Node& node, double ub) {
         res[i] = new KnnRes(ub);
     }
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
+    node.ub =  res[0]->dis + node.radius;
+    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) { 
+        return; 
+    }
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
         if (res[0]->id == node.centroid_id) {
             return;
@@ -172,8 +196,11 @@ void DaskMeans::assignLabels(Node& node, double ub) {
 void DaskMeans::updateCentroids() {
     for (auto centroid : centroid_list) {
         Cluster* cluster = centroid->getCluster();
-        std::vector<double> new_coordinate = divideVector(cluster->sum_vec, cluster->point_number);
-        centroid->updateCoordinate(new_coordinate);
+        std::vector<double> new_coordinate;
+        if (cluster->point_number != 0) {
+            new_coordinate = divideVector(cluster->sum_vec, cluster->point_number);
+            centroid->updateCoordinate(new_coordinate);
+        }
     }
 }
 

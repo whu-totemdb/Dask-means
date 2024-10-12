@@ -35,22 +35,37 @@ void DualTree::run() {
     double start_time, end_time;
     start_time = clock();
 
-    // main loop
     buildDataIndex(k, this->capacity);
     initializeCentroids();
+    
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "build index and initialize in " << init_time << " s" << std::endl;
+
+    // main loop
     do {
-        if (it != 0) {
-            start_time = clock();
-        }
+        start_time = clock();
         buildCentroidIndex(k);
         setInnerBound();
+        // end_time = clock();
+        // std::cout << "buildCentroidIndex() && setInnerBound(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         assignLabels(*data_index->root);
+        // end_time = clock();
+        // std::cout << "assignLabels(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         updateCentroids();
-        // output("/home/lzp/cs/dask-means-cpp/output/DualTree_output.txt");
+        // end_time = clock();
+        // std::cout << "updateCentroids(): " 
+                // << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
 
         end_time = clock();
-        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
     } while (!hasConverged() && it < max_iterations);
 
@@ -59,7 +74,7 @@ void DualTree::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
-    std::cout << "successfully run DualTree in " << total_runtime << " ms" << std::endl;
+    std::cout << "successfully run DualTree in " << total_runtime << " s" << std::endl;
 }
 
 void DualTree::buildDataIndex(int k, int capacity) {
@@ -138,9 +153,10 @@ void DualTree::updateCentroids() {
         for (int data_id : data_id_list) {
             new_coordinate = addVector(new_coordinate, dataset[data_id]);
         }
-        new_coordinate = divideVector(new_coordinate, data_num);
-
-        centroid->updateCoordinate(new_coordinate);
+        if (data_num != 0) {
+            new_coordinate = divideVector(new_coordinate, data_num);
+            centroid->updateCoordinate(new_coordinate);
+        }
 
         max_drift = std::max(centroid->max_drift, max_drift);
     }
@@ -162,25 +178,37 @@ void DualTree::assignPoint(KdTreeNode& node, int index) {
             return;
     }
 
-    double nearest_dis = std::numeric_limits<double>::max();
-    double second_nearest_dis = std::numeric_limits<double>::max();
-    int nearest_id = -1;
-    for (int i = 0; i < k; i++) {
-        double dis = distance1(dataset[point_id], centroid_list[i]->getCoordinate());
-
-        if (dis <= nearest_dis) {
-            second_nearest_dis = nearest_dis;
-            nearest_dis = dis;
-            nearest_id = i;
-        } else if (dis < second_nearest_dis) {
-            second_nearest_dis = dis;
-        }
+    // find two nearest centroid use kd-tree 2nn
+    std::vector<KnnRes*> res(2);
+    for (size_t i = 0; i< 2; i++) {
+        res[i] = new KnnRes();
     }
+    Utils::kdTree2nn(dataset[point_id], *centroid_index->root, res, centroid_list);
     // set point ub and lb
-    point_lb[point_id] = second_nearest_dis;
-    point_ub[point_id] = nearest_dis;
+    point_lb[point_id] = res[1]->dis;
+    point_ub[point_id] = res[0]->dis;
 
-    node.centroid_id_for_data[index] = nearest_id;
+    node.centroid_id_for_data[index] = res[0]->id;
+
+    // double nearest_dis = std::numeric_limits<double>::max();
+    // double second_nearest_dis = std::numeric_limits<double>::max();
+    // int nearest_id = -1;
+    // for (int i = 0; i < k; i++) {
+    //     double dis = distance1(dataset[point_id], centroid_list[i]->getCoordinate());
+
+    //     if (dis <= nearest_dis) {
+    //         second_nearest_dis = nearest_dis;
+    //         nearest_dis = dis;
+    //         nearest_id = i;
+    //     } else if (dis < second_nearest_dis) {
+    //         second_nearest_dis = dis;
+    //     }
+    // }
+    // set point ub and lb
+    // point_lb[point_id] = second_nearest_dis;
+    // point_ub[point_id] = nearest_dis;
+
+    // node.centroid_id_for_data[index] = nearest_id;
 }
 
 // assign a node to a cluster if all children (or data points) are assigned to the same cluster

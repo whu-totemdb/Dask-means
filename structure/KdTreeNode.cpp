@@ -43,6 +43,7 @@ void KdTreeNode::initLeafNode(const std::vector<std::vector<double>>& dataset,
     current_dimension = Utils::findBestDimension(dataset, point_id_list);
     int axis = current_dimension;
 
+    // find median data
     std::sort(point_id_list.begin(), point_id_list.end(), 
               [&dataset, axis](int a, int b) {
                   return dataset[a][axis] < dataset[b][axis];
@@ -64,7 +65,6 @@ void KdTreeNode::resetBound(const std::vector<std::vector<double>>& dataset,
         res[i] = new KnnRes();
     }
     Utils::kdTree2nn(split_point, node, res, centroid_list);
-    // Utils::calculate2nn(split_point, res, centroid_list);
 
     // set upper bound and lower bound
     ub = getUpperBound(dataset, centroid_list[res[0]->id]->getCoordinate());

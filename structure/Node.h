@@ -22,6 +22,7 @@ public:
     int point_number = 0;
     int centroid_id = -1;   // internal: centroid id the the node is assigned to
     std::vector<int> centroid_id_for_data;  // leaf: centroid id that each data is assiged to
+    double ub = 0.0;
 
 public:
     Node();

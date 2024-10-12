@@ -13,19 +13,20 @@ void Lloyd::run() {
     int it = 0;     // iteration
     double start_time, end_time;
     start_time = clock();
+    initializeCentroids();
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "initialize centroids in " << init_time << " s" << std::endl;
 
     // main loop
-    initializeCentroids();
     do {
-        if (it != 0) {
-            start_time = clock();
-        }
+        start_time = clock();
         assignLabels();
         updateCentroids();
 
         end_time = clock();
-        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
     } while (!hasConverged() && it < max_iterations);
 
@@ -34,7 +35,7 @@ void Lloyd::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
-    std::cout << "successfully run Lloyd in " << total_runtime << " ms" << std::endl;
+    std::cout << "successfully run Lloyd in " << total_runtime << " s" << std::endl;
 
 }
 
@@ -72,8 +73,9 @@ void Lloyd::updateCentroids() {
         for (int data_id : data_id_list) {
             new_coordinate = addVector(new_coordinate, dataset[data_id]);
         }
-        new_coordinate = divideVector(new_coordinate, data_num);
-
-        centroid->updateCoordinate(new_coordinate);
+        if (data_num != 0) {
+            new_coordinate = divideVector(new_coordinate, data_num);
+            centroid->updateCoordinate(new_coordinate);
+        }
     }
 }

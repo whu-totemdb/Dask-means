@@ -8,10 +8,10 @@
 
 class Experiment {
 protected:
-    std::string data_path = "/home/lzp/cs/dask-means-cpp/dataset/test.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/lloyd_output.txt";
+    std::string data_path;
+    std::string output_path;
 
-    int leaf_capacity = 2;
+    int leaf_capacity = 30;
     int data_scale;
     int data_dimension;
     int k;
@@ -21,6 +21,8 @@ public:
     Experiment(int data_scale, int data_dimension, int k)
         : data_scale(data_scale), data_dimension(data_dimension), k(k) {}
     ~Experiment() {}
+
+    void set_file_path(const std::string& data_path, const std::string& output_path);
 
     void test_Lloyd();
 
@@ -35,6 +37,11 @@ public:
     void test_DualTree();
 };
 
+void Experiment::set_file_path(const std::string& data_path, const std::string& output_path) {
+    this->data_path = data_path;
+    this->output_path = output_path;
+}
+
 void Experiment::test_Lloyd() {
     cout << "=============starting Lloyd=============" << endl;
     Lloyd* lloyd = new Lloyd();
@@ -42,6 +49,7 @@ void Experiment::test_Lloyd() {
     lloyd->load(data_path);
     lloyd->run();
     // lloyd->output(output_path);
+    lloyd->writeRuntime(output_path);
     delete lloyd;
 }
 
@@ -52,6 +60,7 @@ void Experiment::test_dask_means() {
     dask_means->load(data_path);
     dask_means->run();
     // dask_means->output(output_path);
+    dask_means->writeRuntime(output_path);
     delete dask_means;
 }
 
@@ -62,6 +71,7 @@ void Experiment::test_NoInB() {
     noInB->load(data_path);
     noInB->run();
     // noInB->output(output_path);
+    noInB->writeRuntime(output_path);
     delete noInB;
 }
 
@@ -72,6 +82,7 @@ void Experiment::test_NoKnn() {
     noKnn->load(data_path);
     noKnn->run();
     // noKnn->output(output_path);
+    noKnn->writeRuntime(output_path);
     delete noKnn;
 }
 
@@ -80,6 +91,7 @@ void Experiment::test_NoBound() {
     NoBound* no_bound = new NoBound();
     no_bound->initParameters(data_scale, data_dimension, k);
     no_bound->run(data_path.c_str());
+    no_bound->writeRuntime(output_path);
     delete no_bound;
 }
 
@@ -90,5 +102,6 @@ void Experiment::test_DualTree() {
     dual_tree->load(data_path);
     dual_tree->run();
     // dual_tree->output(output_path);
+    dual_tree->writeRuntime(output_path);
     delete dual_tree;
 }

@@ -11,21 +11,44 @@ void NoInB::run() {
     double start_time, end_time;
     start_time = clock();
 
-    // main loop
     buildDataIndex(this->capacity);
     initializeCentroids();
+
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "build index and initialize in " << init_time << " s" << std::endl;
+
+    // main loop
     do {
-        if (it != 0) {
-            start_time = clock();
-        }
+        start_time = clock();
         buildCentroidIndex();
+        if (it == 0) {
+            ub = std::vector<double>(k, std::numeric_limits<double>::max());
+        } else {
+            for (int i = 0; i < k; i++) {
+                ub[i] = inner_bound[i] + centroid_list[i]->drift + centroid_list[i]->max_drift;
+            }
+        }
+        setInnerBound();
+        // end_time = clock();
+        // std::cout << "buildCentroidIndex() && setInnerBound(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
+        // end_time = clock();
+        // std::cout << "assignLabels(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
+
+        // start_time = clock();
         updateCentroids();
-        // output("/home/lzp/cs/dask-means-cpp/output/NoInB_output.txt");
+        // end_time = clock();
+        // std::cout << "updateCentroids(): " 
+        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
 
         end_time = clock();
-        runtime[it] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " ms" << std::endl;
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
     } while (!hasConverged() && it < max_iterations);
 
@@ -34,7 +57,7 @@ void NoInB::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
-    std::cout << "successfully run NoInB in " << total_runtime << " ms" << std::endl;
+    std::cout << "successfully run NoInB in " << total_runtime << " s" << std::endl;
 
 }
 

@@ -8,6 +8,8 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <cfloat>
+#include <random>
+#include <set>
 
 using namespace std;
 using namespace Eigen;
@@ -24,16 +26,14 @@ typedef vector<vector<unsigned int>> ClusterIndexVector;
 
 typedef Array<bool, 1, Dynamic> VectorXb;
 
-typedef struct Neighbor
-//Define the "neighbor" structure
-{
+typedef struct Neighbor {
     OurType distance;
     int index;
-};
+} NeighborType;
 
 typedef vector<Neighbor> sortedNeighbors;
 
-MatrixOur load_data(const char* filename);
+MatrixOur load_data(const char* filename, int data_scale, int data_dimension);
 
 inline MatrixOur
 update_centroids(MatrixOur& dataset, ClusterIndexVector& cluster_point_index, unsigned int k, unsigned int n,
@@ -76,10 +76,12 @@ void initialize(MatrixOur& dataset, MatrixOur& centroids, VectorXi& labels, Clus
                 ClusterDistVector& temp_dis);
 
 
-VectorXi ball_k_means_Ring(MatrixOur& dataset, MatrixOur& centroids, bool detail = false) {
+VectorXi ball_k_means_Ring(MatrixOur& dataset, MatrixOur& centroids, double& init_time,
+            std::vector<double>& runtime, bool detail = false) {
 
     double start_time, end_time;
 
+    start_time = clock();
 
     bool judge = true;
 
@@ -126,10 +128,15 @@ VectorXi ball_k_means_Ring(MatrixOur& dataset, MatrixOur& centroids, bool detail
     initialize(dataset, centroids, labels, cluster_point_index, clusters_neighbors_index, temp_dis);
 
     temp_cluster_point_index.assign(cluster_point_index.begin(), cluster_point_index.end());
+    
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "build index and initialize in " << init_time << " s" << std::endl;
 
-    start_time = clock();
+    
+    while (true && iteration_counter < 20) {
+        start_time = clock();
 
-    while (true) {
         old_flag = flag;
         //record cluster_point_index from the previous round
         cluster_point_index.assign(temp_cluster_point_index.begin(), temp_cluster_point_index.end());
@@ -264,28 +271,43 @@ VectorXi ball_k_means_Ring(MatrixOur& dataset, MatrixOur& centroids, bool detail
                     }
                 }
             }
-        }
-        else
+        } else {
             break;
+        }
+            
+        end_time = clock();
+        runtime[iteration_counter] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
+        std::cout << "iter: " << iteration_counter << ", runtime: " << runtime[iteration_counter] << " ms" << std::endl;
     }
-    end_time = clock();
 
     if (detail == true) {
-        cout << "ball-k-means with dividing ring:" << endl;
-        cout << "k                :                  ||" << k << endl;
-        cout << "iterations       :                  ||" << iteration_counter << endl;
-        cout << "The number of calculating distance: ||" << cal_dist_num << endl;
-        cout << "The number of neighbors:            ||" << num_of_neighbour << endl;
-        cout << "Time per round:                     ||"
-             << (double)(end_time - start_time) / CLOCKS_PER_SEC * 1000 / iteration_counter << endl;
-
+        // show total runtime
+        double total_runtime = 0.0;
+        for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+            total_runtime += runtime[i];
+        }
+        std::cout << "successfully run NoBound in " << total_runtime << " ms" << std::endl;
     }
+
+    // if (detail == true) {
+    //     cout << "ball-k-means with dividing ring:" << endl;
+    //     cout << "k                :                  ||" << k << endl;
+    //     cout << "iterations       :                  ||" << iteration_counter << endl;
+    //     cout << "The number of calculating distance: ||" << cal_dist_num << endl;
+    //     cout << "The number of neighbors:            ||" << num_of_neighbour << endl;
+    //     cout << "Time per round:                     ||"
+    //          << (double)(end_time - start_time) / CLOCKS_PER_SEC * 1000 / iteration_counter << endl;
+
+    // }
     return labels;
 }
 
-VectorXi ball_k_means_noRing(MatrixOur& dataset, MatrixOur& centroids, bool detail = false) {
+VectorXi ball_k_means_noRing(MatrixOur& dataset, MatrixOur& centroids, 
+            std::vector<double>& runtime, bool detail = false) {
 
     double start_time, end_time;
+
+    start_time = clock();
 
     bool judge = true;
 
@@ -337,9 +359,13 @@ VectorXi ball_k_means_noRing(MatrixOur& dataset, MatrixOur& centroids, bool deta
 
     temp_clusters_point_index.assign(clusters_point_index.begin(), clusters_point_index.end());
 
-    start_time = clock();
+    double start_time1 = clock();
 
     while (true) {
+        if (iteration_counter != 0) {
+            start_time = clock();
+        }
+
         old_flag = flag;
         //record clusters_point_index from the previous round
         clusters_point_index.assign(temp_clusters_point_index.begin(), temp_clusters_point_index.end());
@@ -471,28 +497,41 @@ VectorXi ball_k_means_noRing(MatrixOur& dataset, MatrixOur& centroids, bool deta
 
             }
 
-        }
-        else {
+        } else {
             break;
         }
+
+        end_time = clock();
+        runtime[iteration_counter] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << iteration_counter << ", runtime: " << runtime[iteration_counter] << " s" << std::endl;
     }
-    end_time = clock();
+    double end_time1 = clock();
 
     if (detail == true) {
-        cout << "ball-k-means without dividing ring:" << endl;
-        cout << "k                :                  ||" << k << endl;
-        cout << "iterations       :                  ||" << iteration_counter << endl;
-        cout << "The number of calculating distance: ||" << cal_dist_num << endl;
-        cout << "The number of neighbors:            ||" << num_of_neighbour << endl;
-        cout << "Time per round:                     ||" << (double)(end_time - start_time) / CLOCKS_PER_SEC * 1000 / iteration_counter << endl;
-
+        // show total runtime
+        double total_runtime = 0.0;
+        for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+            total_runtime += runtime[i];
+        }
+        std::cout << "successfully run NoBound in " << total_runtime << " s" << std::endl;
     }
+    
+
+    // if (detail == true) {
+    //     cout << "ball-k-means without dividing ring:" << endl;
+    //     cout << "k                :                  ||" << k << endl;
+    //     cout << "iterations       :                  ||" << iteration_counter << endl;
+    //     cout << "The number of calculating distance: ||" << cal_dist_num << endl;
+    //     cout << "The number of neighbors:            ||" << num_of_neighbour << endl;
+    //     cout << "Time per round:                     ||" << (double)(end_time1 - start_time1) / CLOCKS_PER_SEC * 1000 / iteration_counter << endl;
+
+    // }
     return labels;
 
 
 }
 
-MatrixOur load_data(const char* filename) {
+MatrixOur load_data(const char* filename, int data_scale, int data_dimension) {
     /*
 
     *Summary: Read data through file path
@@ -504,22 +543,11 @@ MatrixOur load_data(const char* filename) {
     *Return : Dataset in eigen matrix format.
 
     */
-
-    int x = 0, y = 0;  // x: rows  ，  y/x: cols
-    ifstream inFile(filename, ios::in);
-    string lineStr;
-    while (getline(inFile, lineStr)) {
-        stringstream ss(lineStr);
-        string str;
-        while (getline(ss, str, ','))
-            y++;
-        x++;
-    }
-    MatrixOur data(x, y / x);
+    MatrixOur data(data_scale, data_dimension);
     ifstream inFile2(filename, ios::in);
     string lineStr2;
     int i = 0;
-    while (getline(inFile2, lineStr2)) {
+    while (getline(inFile2, lineStr2) && i < data_scale) {
         stringstream ss2(lineStr2);
         string str2;
         int j = 0;
@@ -885,8 +913,10 @@ cal_ring_dist_noRing(unsigned int data_num, unsigned int dataset_cols, MatrixOur
              data_in_area.rowwise().squaredNorm()).rowwise() + (now_centers.rowwise().squaredNorm()).transpose());
 }
 
-void initialize(MatrixOur& dataset, MatrixOur& centroids, VectorXi& labels, ClusterIndexVector& cluster_point_index,
-                ClusterIndexVector& clusters_neighbors_index, ClusterDistVector& temp_dis) {
+void initialize(MatrixOur& dataset, MatrixOur& centroids, VectorXi& labels, 
+                ClusterIndexVector& cluster_point_index,
+                ClusterIndexVector& clusters_neighbors_index, 
+                ClusterDistVector& temp_dis) {
 
     /*
 
@@ -908,24 +938,54 @@ void initialize(MatrixOur& dataset, MatrixOur& centroids, VectorXi& labels, Clus
 
     */
 
-    MatrixOur::Index minCol;
-    for (int i = 0; i < centroids.rows(); i++) {
-        cluster_point_index.push_back(vector<unsigned int>());
-        clusters_neighbors_index.push_back(vector<unsigned int>());
-        temp_dis.push_back(vector<OurType>());
+    // MatrixOur::Index minCol;
+    // for (int i = 0; i < centroids.rows(); i++) {
+    //     cluster_point_index.push_back(vector<unsigned int>());
+    //     clusters_neighbors_index.push_back(vector<unsigned int>());
+    //     temp_dis.push_back(vector<OurType>());
+    // }
+    // MatrixOur M = cal_dist(dataset, centroids);
+    // for (int i = 0; i < dataset.rows(); i++) {
+    //     M.row(i).minCoeff(&minCol);
+    //     labels(i) = minCol;
+    //     cluster_point_index[minCol].push_back(i);
+    // }
+
+    int n = dataset.rows();
+    int k = centroids.rows();
+    int d = dataset.cols();
+
+    cluster_point_index.resize(k);
+    clusters_neighbors_index.resize(k);
+    temp_dis.resize(k);
+    for (int i = 0; i < k; ++i) {
+        cluster_point_index[i].reserve(n / k);
+        temp_dis[i].reserve(n);
     }
-    MatrixOur M = cal_dist(dataset, centroids);
-    for (int i = 0; i < dataset.rows(); i++) {
-        M.row(i).minCoeff(&minCol);
+
+    // MatrixOur M = cal_dist(dataset, centroids);
+
+    labels.resize(n);
+    for (int i = 0; i < n; ++i) {
+        double minDist = std::numeric_limits<double>::max();
+        int minCol = 0;
+        for (int j = 0; j < k; ++j) {
+            double dist = (dataset.row(i) - centroids.row(j)).norm();
+            if (dist < minDist) {
+                minDist = dist;
+                minCol = j;
+            }
+        }
         labels(i) = minCol;
         cluster_point_index[minCol].push_back(i);
+        temp_dis[minCol].push_back(minDist);
     }
 }
 
 
-inline MatrixOur initial_centroids(MatrixOur dataset, int k, int random_seed = -1) {
+inline MatrixOur initial_centroids(MatrixOur dataset, int k, int data_scale, int random_seed = 6) {
     int dataset_cols = dataset.cols();
-    int dataset_rows = dataset.rows();
+    int dataset_rows = data_scale;
     vector<int> flag(dataset_rows, 0);
 
     MatrixOur centroids(k, dataset_cols);
@@ -974,34 +1034,56 @@ inline MatrixOur initial_centroids(MatrixOur dataset, int k, int random_seed = -
     return centroids;
 }
 
-VectorXi ball_k_means(MatrixOur& dataset, int k, bool isRing = false, bool detail = false,
-                      int random_seed = -1, const char* filename = "0") {
+MatrixOur initial_centroids_randomly(MatrixOur& dataset, int k, int data_scale) {
+    int dataset_rows = data_scale;
+    MatrixOur centroids(k, dataset.cols());
+
+    std::set<int> selected_ids;
+    for (int i = 0; i < k; i ++) {
+        unsigned seed = 6;      // fixed seed
+        std::mt19937 gen(seed);
+        // std::random_device seed;    // random seed
+        // std::mt19937 gen(seed());
+        std::uniform_int_distribution<> distrib(0, data_scale - 1);
+
+        int point_id;
+        do {
+            point_id = distrib(gen);
+        } while (selected_ids.find(point_id) != selected_ids.end());
+
+        selected_ids.insert(point_id);
+        centroids.row(i) = dataset.row(point_id);
+    }
+       
+    return centroids;
+}
+
+VectorXi ball_k_means(MatrixOur& dataset, int k, int data_scale, int data_dimension,
+            std::vector<double>& runtime, double& init_time, bool isRing = false, bool detail = false,
+            int random_seed = -1, const char* filename = "0") {
     MatrixOur centroids;
     if (filename == "0") {
-        centroids = initial_centroids(dataset, k, random_seed);
+        centroids = initial_centroids_randomly(dataset, k, data_scale);
     }
     else {
-        centroids = load_data(filename);
+        centroids = load_data(filename, data_scale, data_dimension);
     }
     VectorXi labels;
     if (isRing) {
-        labels = ball_k_means_Ring(dataset, centroids, detail);
+        labels = ball_k_means_Ring(dataset, centroids, init_time, runtime, detail);
     }
     else {
-        labels = ball_k_means_noRing(dataset, centroids, detail);
+        labels = ball_k_means_noRing(dataset, centroids, runtime, detail);
     }
     return labels;
 }
 
 
-class NoBound {
-protected:
-    int data_scale;
-    int data_dimension;
-    int k;
-
+class NoBound : public KMeansBase {
 public:
-    NoBound() {}
+    NoBound(int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001)
+        : KMeansBase(max_iterations, convergence_threshold) {}
+
     ~NoBound() {}
 
     void initParameters(int data_scale1, int data_dimension1, int k1) {
@@ -1011,12 +1093,7 @@ public:
     }
 
     void run(const char* file_path) {
-        MatrixOur dataset = load_data(file_path);
-
-        double start_time, end_time;
-        start_time = clock();
-        VectorXi labels = ball_k_means(dataset, k, false, true);
-        end_time = clock();
-        cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << endl;
+        MatrixOur dataset = load_data(file_path, data_scale, data_dimension);
+        VectorXi labels = ball_k_means(dataset, k, data_scale, data_dimension, runtime, init_time, true, true);
     }
 };
