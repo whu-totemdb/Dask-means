@@ -37,18 +37,44 @@ void Cluster::clear() {
 }
 
 void Cluster::dataIn(std::vector<double> data_in, int data_id) {
+    // double start_time, end_time;
+    // start_time = clock();
+
     sum_vec = addVector(sum_vec, data_in);
     data_id_list.push_back(data_id);
     point_number += 1;
+
+    // end_time = clock();
+    // data_in_time += double(end_time - start_time) / CLOCKS_PER_SEC;
 }
 
 void Cluster::dataIn(std::vector<double> data_in, Node* node) {
+    // double start_time, end_time;
+    // start_time = clock();
+
     sum_vec = addVector(sum_vec, node->sum_vector);
     node_list.push_back(node);
     point_number += node->point_number;
+
+    // end_time = clock();
+    // data_in_time += double(end_time - start_time) / CLOCKS_PER_SEC;
+}
+
+void Cluster::dataIn(int point_num, std::vector<double> data_in) {
+    // double start_time, end_time;
+    // start_time = clock();
+
+    sum_vec = addVector(sum_vec, data_in);
+    point_number += point_num;
+    
+    // end_time = clock();
+    // data_in_time += double(end_time - start_time) / CLOCKS_PER_SEC;
 }
 
 void Cluster::dataOut(std::vector<double> data_out, int data_id) {
+    // double start_time, end_time;
+    // start_time = clock();
+
     auto it = std::find(data_id_list.begin(), data_id_list.end(), data_id);
     if (it != data_id_list.end()) {
         auto new_end = std::remove(data_id_list.begin(), data_id_list.end(), data_id);
@@ -57,9 +83,15 @@ void Cluster::dataOut(std::vector<double> data_out, int data_id) {
         sum_vec = subtractVector(sum_vec, data_out);
         point_number -= 1;
     }
+
+    // end_time = clock();
+    // data_out_time += double(end_time - start_time) / CLOCKS_PER_SEC;
 }
 
 void Cluster::dataOut(std::vector<double> data_out, Node* node) {
+    // double start_time, end_time;
+    // start_time = clock();
+
     auto it = std::find(node_list.begin(), node_list.end(), node);
     if (it != node_list.end()) {
         auto new_end = std::remove(node_list.begin(), node_list.end(), node);
@@ -68,4 +100,18 @@ void Cluster::dataOut(std::vector<double> data_out, Node* node) {
         sum_vec = subtractVector(sum_vec, data_out);
         point_number -= node->point_number;
     }
+
+    // end_time = clock();
+    // data_out_time += double(end_time - start_time) / CLOCKS_PER_SEC;
+}
+
+void Cluster::dataOut(int point_num, std::vector<double> data_out) {
+    // double start_time, end_time;
+    // start_time = clock();
+
+    sum_vec = subtractVector(sum_vec, data_out);
+    point_number -= point_num;
+    
+    // end_time = clock();
+    // data_out_time += double(end_time - start_time) / CLOCKS_PER_SEC;
 }

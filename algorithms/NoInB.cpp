@@ -53,7 +53,7 @@ void NoInB::run() {
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
-    double total_runtime = 0.0;
+    double total_runtime = init_time;
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
@@ -97,5 +97,27 @@ void NoInB::assignLabels(Node& node, double ub) {
             Cluster* new_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
             new_cluster->dataIn(dataset[node.data_id_list[i]], node.data_id_list[i]);
         }
+    }
+}
+
+void NoInB::assignToCluster(Node& node, int centroid_id) {
+    if (node.centroid_id != -1) {
+        Cluster* old_cluster = centroid_list[node.centroid_id]->cluster;
+        old_cluster->dataOut(node.sum_vector, &node);
+    }
+
+    node.centroid_id = centroid_id;
+    if (node.leaf) {
+        for (int i = 0; i < node.point_number; i++) {
+            int clu_id = node.centroid_id_for_data[i];
+            if (clu_id != -1) {
+                Cluster* old_cluster = centroid_list[clu_id]->cluster;
+                old_cluster->dataOut(dataset[node.data_id_list[i]], node.data_id_list[i]);
+            }
+            node.centroid_id_for_data[i] = centroid_id;
+        }
+    } else {
+        assignToCluster(*node.leftChild, centroid_id);
+        assignToCluster(*node.rightChild, centroid_id);
     }
 }

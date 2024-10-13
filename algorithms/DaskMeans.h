@@ -18,6 +18,9 @@ protected:
     std::vector<double> ub;
     int capacity;
 
+    // for debug
+    // double time_knn = 0.0;
+
 public:
     DaskMeans(int capacity, int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
 

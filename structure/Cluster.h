@@ -16,7 +16,8 @@ public:
     std::vector<double> sum_vec;
 
     // for debug
-    std::vector<int> tmp_list;
+    // double data_in_time = 0.0;
+    // double data_out_time = 0.0;
 
 public:
     Cluster(int cluster_id, int data_dimension);
@@ -34,9 +35,11 @@ public:
 
     void dataIn(std::vector<double> data_in, int data_id);
     void dataIn(std::vector<double> data_in, Node* node);
+    void dataIn(int point_num, std::vector<double> data_in);
 
     void dataOut(std::vector<double> data_out, int data_id);
     void dataOut(std::vector<double> data_out, Node* node);
+    void dataOut(int point_num, std::vector<double> data_out);
 };
 
 #endif // CLUSTER_H

@@ -276,17 +276,17 @@ VectorXi ball_k_means_Ring(MatrixOur& dataset, MatrixOur& centroids, double& ini
         }
             
         end_time = clock();
-        runtime[iteration_counter] = double(end_time - start_time) * 1000 / CLOCKS_PER_SEC;
-        std::cout << "iter: " << iteration_counter << ", runtime: " << runtime[iteration_counter] << " ms" << std::endl;
+        runtime[iteration_counter] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << iteration_counter << ", runtime: " << runtime[iteration_counter] << " s" << std::endl;
     }
 
     if (detail == true) {
         // show total runtime
-        double total_runtime = 0.0;
+        double total_runtime = init_time;
         for (size_t i = 0; i < MAX_ITERATIONS; i++) {
             total_runtime += runtime[i];
         }
-        std::cout << "successfully run NoBound in " << total_runtime << " ms" << std::endl;
+        std::cout << "successfully run NoBound in " << total_runtime << " s" << std::endl;
     }
 
     // if (detail == true) {

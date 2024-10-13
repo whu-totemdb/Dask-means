@@ -14,6 +14,7 @@ public:
 protected:
     void assignLabels(Node& node, double ub);
 
+    void assignToCluster(Node& node, int centroid_id);
 };
 
 

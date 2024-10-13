@@ -226,7 +226,7 @@ namespace Utils {
 
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
         const std::vector<std::vector<double>>& dataset) {
-        if (root.isLeaf()) {
+        if (root.leaf) {
             for (int id : root.data_id_list) {
                 double distance = distance1(point, dataset[id]);
                 if (distance >= res.dis)
@@ -250,9 +250,9 @@ namespace Utils {
 
     void ballTree1nn(std::vector<double> point, Node& root, KnnRes& res, 
         std::vector<Centroid*>& centroid_list) {
-        if (root.isLeaf()) {
+        if (root.leaf) {
             for (int id : root.data_id_list) {
-                double distance = distance1(point, centroid_list[id]->getCoordinate());
+                double distance = distance1(point, centroid_list[id]->coordinate);
                 if (distance >= res.dis)
                     continue;
                 
@@ -274,7 +274,7 @@ namespace Utils {
 
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
         const std::vector<std::vector<double>>& dataset) {
-        if (root.isLeaf()) {
+        if (root.leaf) {
             for (int id : root.data_id_list) {
                 double distance = distance1(point, dataset[id]);
                 if (res[0]->id == -1) {
@@ -305,9 +305,9 @@ namespace Utils {
 
     void ballTree2nn(std::vector<double> point, Node& root, std::vector<KnnRes*>& res, 
         std::vector<Centroid*>& centroid_list) {
-        if (root.isLeaf()) {
+        if (root.leaf) {
             for (int id : root.data_id_list) {
-                double distance = distance1(point, centroid_list[id]->getCoordinate());
+                double distance = distance1(point, centroid_list[id]->coordinate);
                 if (res[0]->id == -1) {
                     res[0]->dis = distance;
                     res[0]->id = id;

@@ -8,8 +8,13 @@ BallTree::BallTree() { root = new Node(); }
 
 BallTree::BallTree(int capacity): capacity(capacity) { root = new Node(); }
 
+BallTree::BallTree(int capacity, int data_scale): capacity(capacity) { 
+    root = new Node();
+    height = static_cast<int>(std::round(std::log2(data_scale / capacity))) + 1;
+}
+
 BallTree::~BallTree() {
-    if (root != nullptr) {
+    if (this != nullptr && root != nullptr) {
         delete root;
         root = nullptr;
     }
@@ -21,7 +26,7 @@ void BallTree::buildBallTree(std::vector<std::vector<double>>& dataset, int data
     for (int i = 0; i < data_scale; i++) {
         point_id_list[i] = i;
     }
-    buildBallTree1(dataset, *root, point_id_list);
+    buildBallTree1(dataset, *root, point_id_list, 0);
     initBallTree();
 }
 
@@ -42,10 +47,10 @@ void BallTree::buildBallTree(std::vector<Centroid*>& centroid_list, int k) {
  * @param point_id_list the list of points' ids covered by current node
  */
 void BallTree::buildBallTree1(std::vector<std::vector<double>>& dataset, 
-    Node& node, std::vector<int> point_id_list) {
+    Node& node, std::vector<int> point_id_list, int h) {
 
     int size = point_id_list.size();
-    if (size <= this->capacity) {
+    if (size <= this->capacity || h >= height) {
         node.initLeafNode(point_id_list, size);
         return;
     }
@@ -73,8 +78,8 @@ void BallTree::buildBallTree1(std::vector<std::vector<double>>& dataset,
     createNode(dataset, point_id_list1, size1, *(node.leftChild));
     createNode(dataset, point_id_list2, size2, *(node.rightChild));
 
-    buildBallTree1(dataset, *(node.leftChild), point_id_list1);
-    buildBallTree1(dataset, *(node.rightChild), point_id_list2);
+    buildBallTree1(dataset, *(node.leftChild), point_id_list1, h + 1);
+    buildBallTree1(dataset, *(node.rightChild), point_id_list2, h + 1);
 }
 
 void BallTree::buildBallTree1(std::vector<Centroid*>& centroid_list, 
