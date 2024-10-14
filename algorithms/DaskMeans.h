@@ -19,7 +19,9 @@ protected:
     int capacity;
 
     // for debug
-    // double time_knn = 0.0;
+    // double time_knn1 = 0.0;
+    // double time_knn2 = 0.0;
+    std::vector<double> inner_id;
 
 public:
     DaskMeans(int capacity, int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
@@ -33,7 +35,7 @@ public:
 protected:
     void buildDataIndex(int capacity = 1);
 
-    void buildCentroidIndex(int capacity = 1);
+    void buildCentroidIndex(int capacity = 5);
 
     void setInnerBound();
 

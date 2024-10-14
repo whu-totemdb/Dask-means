@@ -36,6 +36,8 @@ void DaskMeans::run() {
 
     // main loop
     do {
+        // time_knn1 = 0.0;
+        // time_knn2 = 0.0;
         // start_time = clock();
         buildCentroidIndex();
         start_time = clock();
@@ -67,6 +69,9 @@ void DaskMeans::run() {
         runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
         std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
+
+        // std::cout << "time knn1: " << time_knn1 << " s" << std::endl;
+        // std::cout << "time knn2: " << time_knn2 << " s" << std::endl;
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
@@ -118,6 +123,7 @@ void DaskMeans::buildCentroidIndex(int capacity) {
 void DaskMeans::setInnerBound() {
     // using index ball-tree knn to set inner bound
     this->inner_bound = std::vector<double>(k, -1.0);
+    this->inner_id = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
@@ -125,6 +131,7 @@ void DaskMeans::setInnerBound() {
         }
         ballTree2nn(centroid_list[i]->coordinate, *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
+        inner_id[i] = res[1]->id;
     }
 }
 
@@ -149,7 +156,7 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     // start_time = clock();
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
     // end_time = clock();
-    // time_knn += double(end_time - start_time) / CLOCKS_PER_SEC;
+    // time_knn1 += double(end_time - start_time) / CLOCKS_PER_SEC;
     node.ub =  res[0]->dis + node.radius;
     if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) { 
         return; 
@@ -160,7 +167,6 @@ void DaskMeans::assignLabels(Node& node, double ub) {
         }
         assignToCluster(node, res[0]->id);
         Cluster* new_cluster = centroid_list[node.centroid_id]->cluster;
-        // new_cluster->dataIn(node.sum_vector, &node);
         new_cluster->dataIn(node.point_number, node.sum_vector);
         return;
     }
@@ -173,33 +179,34 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     } else {
         if (node.centroid_id != -1) {
             Cluster* old_cluster = centroid_list[node.centroid_id]->cluster;
-            // old_cluster->dataOut(node.sum_vector, &node);
             old_cluster->dataOut(node.point_number, node.sum_vector);
         }
         // 4. assign each point in leaf node
         for (int i = 0; i < node.point_number; i++) {
+            std::vector<double> data = dataset[node.data_id_list[i]];
+            int centroid_id = node.centroid_id_for_data[i];
             // if the point is assigned before
-            if (node.centroid_id_for_data[i] != -1 && distance1(dataset[node.data_id_list[i]], 
-                centroid_list[node.centroid_id_for_data[i]]->coordinate) 
-                < inner_bound[node.centroid_id_for_data[i]] / 2 )
+            if (centroid_id != -1 && distance1(data, centroid_list[centroid_id]->coordinate) 
+                < inner_bound[centroid_id] / 2 )
                 { return; }
-            
+            if (centroid_id != -1 && mdistance(data, centroid_list[centroid_id]->coordinate)
+                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate))
+                { return; }
+
             // use 1nn
             KnnRes* res = new KnnRes(ub);
             // double start_time, end_time;
             // start_time = clock();
-            ballTree1nn(dataset[node.data_id_list[i]], *(centroid_index->root), *res, centroid_list);
+            ballTree1nn(data, *(centroid_index->root), *res, centroid_list);
             // end_time = clock();
-            // time_knn += double(end_time - start_time) / CLOCKS_PER_SEC;
-            if (node.centroid_id_for_data[i] != -1) {
-                Cluster* old_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
-                // old_cluster->dataOut(dataset[node.data_id_list[i]], node.data_id_list[i]);
-                old_cluster->dataOut(1, dataset[node.data_id_list[i]]);
+            // time_knn2 += double(end_time - start_time) / CLOCKS_PER_SEC;
+            if (centroid_id != -1) {
+                Cluster* old_cluster = centroid_list[centroid_id]->cluster;
+                old_cluster->dataOut(1, data);
             }
-            node.centroid_id_for_data[i] = res[0].id;
-            Cluster* new_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
-            // new_cluster->dataIn(dataset[node.data_id_list[i]], node.data_id_list[i]);
-            new_cluster->dataIn(1, dataset[node.data_id_list[i]]);
+            centroid_id = res[0].id;
+            Cluster* new_cluster = centroid_list[centroid_id]->cluster;
+            new_cluster->dataIn(1, data);
         }
     }
 }

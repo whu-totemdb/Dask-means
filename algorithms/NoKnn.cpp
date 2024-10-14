@@ -53,17 +53,15 @@ void NoKnn::run() {
 void NoKnn::setInnerBound() {
     // using simple distance calculation to set inner bound
     this->inner_bound = std::vector<double>(k, -1.0);
+    this->inner_id = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
-        // if (inner_bound[i] >= 0) {
-        //     continue;
-        // }
         std::vector<KnnRes*> res(2);
         for (int i = 0; i < 2; i++) {
             res[i] = new KnnRes(ub[i]);
         }
-        // calculate2nn(centroid_list[i]->getCoordinate(), res, centroid_list);
         ballTree2nn(centroid_list[i]->coordinate, *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
+        inner_id[i] = res[1]->id;
     }
 }
 
@@ -73,6 +71,11 @@ void NoKnn::assignLabels(Node& node, double ub) {
         distance1(node.pivot, centroid_list[node.centroid_id]->coordinate) 
         + node.radius < inner_bound[node.centroid_id] / 2) 
         { return; }
+    if (node.centroid_id != -1) {
+        node.ub += centroid_list[node.centroid_id]->drift;
+        if (node.ub < inner_bound[node.centroid_id] / 2)
+            return;
+    }
 
     // 2. find two nearest centroid for the node (pruning 2)
     std::vector<KnnRes*> res(2);
@@ -80,6 +83,10 @@ void NoKnn::assignLabels(Node& node, double ub) {
         res[i] = new KnnRes(ub);
     }
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
+    node.ub =  res[0]->dis + node.radius;
+    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) { 
+        return; 
+    }
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
         if (res[0]->id == node.centroid_id) {
             return;
@@ -90,7 +97,7 @@ void NoKnn::assignLabels(Node& node, double ub) {
         return;
     }
 
-    if (!node.isLeaf()) {
+    if (!node.leaf) {
         // 3. split the node into two child node
         assignToCluster(node, -1);
         assignLabels(*node.leftChild, res[1]->dis + node.radius);
@@ -102,22 +109,26 @@ void NoKnn::assignLabels(Node& node, double ub) {
         }
         // 4. assign each point in leaf node
         for (int i = 0; i < node.point_number; i++) {
+            std::vector<double> data = dataset[node.data_id_list[i]];
+            int centroid_id = node.centroid_id_for_data[i];
             // if the point is assigned before
-            if (node.centroid_id_for_data[i] != -1 && distance1(dataset[node.data_id_list[i]], 
-                centroid_list[node.centroid_id_for_data[i]]->coordinate) 
-                < inner_bound[node.centroid_id_for_data[i]] / 2 )
+            if (centroid_id != -1 && distance1(data, centroid_list[centroid_id]->coordinate) 
+                < inner_bound[centroid_id] / 2 )
                 { return; }
-            
+            if (centroid_id != -1 && mdistance(data, centroid_list[centroid_id]->coordinate)
+                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate))
+                { return; }
+
             // use 1nn
             KnnRes* res = new KnnRes(ub);
             calculate1nn(dataset[node.data_id_list[i]], *res, centroid_list);
-            if (node.centroid_id_for_data[i] != -1) {
-                Cluster* old_cluster = centroid_list[node.centroid_id_for_data[i]]->cluster;
-                old_cluster->dataOut(1, dataset[node.data_id_list[i]]);
+            if (centroid_id != -1) {
+                Cluster* old_cluster = centroid_list[centroid_id]->cluster;
+                old_cluster->dataOut(1, data);
             }
-            node.centroid_id_for_data[i] = res[0].id;
-            Cluster* new_cluster = centroid_list[node.centroid_id_for_data[i]]->cluster;
-            new_cluster->dataIn(1, dataset[node.data_id_list[i]]);
+            centroid_id = res[0].id;
+            Cluster* new_cluster = centroid_list[centroid_id]->cluster;
+            new_cluster->dataIn(1, data);
         }
     }
 }

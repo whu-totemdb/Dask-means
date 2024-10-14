@@ -495,4 +495,16 @@ namespace Utils {
         return best_dimension;
     }
 
+    double mdistance(const std::vector<double>& a, const std::vector<double>& b) {
+        if (a.size() != b.size()) {
+            throw std::invalid_argument("Vectors must be of the same size.");
+        }
+
+        double distance = 0.0;
+        for (size_t i = 0; i < a.size(); ++i) {
+            distance += std::abs(a[i] - b[i]);
+        }
+        return distance;
+    }
+
 }

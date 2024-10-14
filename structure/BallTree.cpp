@@ -109,13 +109,16 @@ void BallTree::buildBallTree1(std::vector<Centroid*>& centroid_list,
     // 2. create two child nodes
     int size1 = centroid_id_list1.size();
     int size2 = centroid_id_list2.size();
-    node.leftChild = new Node();
-    node.rightChild = new Node();
-    createNode(centroid_list, centroid_id_list1, size1, *(node.leftChild));
-    createNode(centroid_list, centroid_id_list2, size2, *(node.rightChild));
-
-    buildBallTree1(centroid_list, *(node.leftChild), centroid_id_list1);
-    buildBallTree1(centroid_list, *(node.rightChild), centroid_id_list2);
+    if (size1 != 0) {
+        node.leftChild = new Node();
+        createNode(centroid_list, centroid_id_list1, size1, *(node.leftChild));
+        buildBallTree1(centroid_list, *(node.leftChild), centroid_id_list1);
+    }
+    if (size != 0) {
+        node.rightChild = new Node();
+        createNode(centroid_list, centroid_id_list2, size2, *(node.rightChild));
+        buildBallTree1(centroid_list, *(node.rightChild), centroid_id_list2);
+    }
 }
 
 void BallTree::buildBalancedBallTree(std::vector<std::vector<double>>& dataset, 

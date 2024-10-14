@@ -2,7 +2,7 @@
 #ifndef KMEANSBASE_H
 #define KMEANSBASE_H
 
-#define MAX_ITERATIONS 5
+#define MAX_ITERATIONS 20
 
 #include <vector>
 #include <algorithm>

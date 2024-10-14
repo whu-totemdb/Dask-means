@@ -74,6 +74,9 @@ namespace Utils {
             const std::vector<int>& point_id_list);
     int findBestDimension(std::vector<Centroid*>& centroid_list, 
             const std::vector<int>& centroid_id_list);
+
+    // manhattan mistance
+    double mdistance(const std::vector<double>& a, const std::vector<double>& b);
 }
 
 #endif // UTILS_H
