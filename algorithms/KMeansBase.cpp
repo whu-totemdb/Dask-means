@@ -23,7 +23,7 @@ void KMeansBase::initParameters(int data_scale, int data_dimension, int k) {
     this->data_scale = data_scale;
     this->data_dimension = data_dimension;
     this->k = k;
-    this->labels.assign(this->data_scale, 0);
+    this->labels.assign(this->data_scale, -1);
 }
 
 void KMeansBase::setK(int k) {
