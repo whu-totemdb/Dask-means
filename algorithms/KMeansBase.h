@@ -12,7 +12,7 @@
 #include "../structure/Cluster.h"
 
 class KMeansBase {
-protected:
+public:
     std::vector<std::vector<double>> dataset;
     std::vector<Centroid*> centroid_list;   // remember to release the memory
     std::vector<int> labels;    // noting which cluster the data point is assigned to
@@ -34,6 +34,8 @@ public:
     void setK(int k); 
 
     void load(const std::string& file_path);
+
+    void load(std::vector<Centroid*>& centroid_list);
 
     virtual void run() {};
 

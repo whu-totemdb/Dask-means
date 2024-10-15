@@ -65,6 +65,15 @@ void KMeansBase::load(const std::string& file_path) {
     file.close();
 }
 
+void KMeansBase::load(std::vector<Centroid*>& centroid_list) {
+    if (dataset.size() != 0) {
+        dataset.clear();
+    }
+    for (auto centroid : centroid_list) {
+        dataset.push_back(centroid->coordinate);
+    }
+}
+
 // output k cluster with the schema as {cluster_id: int, point_id_list: list()}
 void KMeansBase::output(const std::string& file_path) {
     // std::ofstream file(file_path, std::ios::app);

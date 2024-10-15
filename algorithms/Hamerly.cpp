@@ -1,5 +1,6 @@
 #include "Hamerly.h"
 #include "../utils/Utils.h"
+#include <iostream>
 
 using namespace Utils;
 
@@ -7,9 +8,36 @@ Hamerly::Hamerly(int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {
         ub = std::vector<double>(data_scale, 0.0);
         lb = std::vector<double>(data_scale, 0.0);
+        max_drift = 0.0;
     }
 
 void Hamerly::run() {
+    int it = 0;     // iteration
+    double start_time, end_time;
+    start_time = clock();
+    initializeCentroids();
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "initialize centroids in " << init_time << " s" << std::endl;
+
+    // main loop
+    do {
+        start_time = clock();
+        assignLabels();
+        updateCentroids();
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
+        it++;
+    } while (!hasConverged() && it < max_iterations);
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run Hamerly in " << total_runtime << " s" << std::endl;
 
 }
 
@@ -23,7 +51,7 @@ void Hamerly::assignLabels() {
         if (labels[j] != -1) {
             auto centroid = centroid_list[labels[j]];
             ub[j] += centroid->drift;
-            lb[j] -= centroid->max_drift;
+            lb[j] -= max_drift;
             if (ub[j] <= lb[j]) {
                 centroid->cluster->addDataId(j);
                 continue;
@@ -49,6 +77,7 @@ void Hamerly::assignLabels() {
 }
 
 void Hamerly::updateCentroids() {
+    max_drift = 0.0;
     for (auto centroid : centroid_list) {
         std::vector<int> data_id_list = centroid->cluster->getDataIdList();
         int data_num = data_id_list.size();
@@ -61,5 +90,7 @@ void Hamerly::updateCentroids() {
             new_coordinate = divideVector(new_coordinate, data_num);
             centroid->updateCoordinate(new_coordinate);
         }
+
+        max_drift = std::max(max_drift, centroid->max_drift);
     }
 }
