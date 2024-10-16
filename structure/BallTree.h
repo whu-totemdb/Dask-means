@@ -27,6 +27,9 @@ public:
 
     void buildBallTree1(std::vector<std::vector<double>>& dataset, 
         Node& node, std::vector<int> point_id_list, int height);
+    
+    void buildBallTree1(std::vector<std::vector<double>>& dataset, 
+        Node& node, std::vector<int> point_id_list);
 
     void buildBallTree1(std::vector<Centroid*>& centroid_list, 
         Node& node, std::vector<int> centroid_id_list);

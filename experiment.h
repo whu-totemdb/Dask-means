@@ -35,6 +35,8 @@ public:
     void test_NoBound();
 
     void test_DualTree();
+
+    void test_Hamerly();
 };
 
 void Experiment::set_file_path(const std::string& data_path, const std::string& output_path) {
@@ -97,6 +99,17 @@ void Experiment::test_NoBound() {
 
 void Experiment::test_DualTree() {
     cout << "=============starting DualTree=============" << endl;
+    DualTree* dual_tree = new DualTree(leaf_capacity);
+    dual_tree->initParameters(data_scale, data_dimension, k);
+    dual_tree->load(data_path);
+    dual_tree->run();
+    // dual_tree->output(output_path);
+    dual_tree->writeRuntime(output_path);
+    delete dual_tree;
+}
+
+void Experiment::test_Hamerly() {
+    cout << "=============starting Hamerly=============" << endl;
     DualTree* dual_tree = new DualTree(leaf_capacity);
     dual_tree->initParameters(data_scale, data_dimension, k);
     dual_tree->load(data_path);

@@ -5,11 +5,11 @@ using namespace std;
 
 int main(){
     // T-drive 2d
-    // std::string data_path = "/mnt/e/torch-clus/dataset/1_2d_T_drive_11317142.txt";
-    // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/T-drive-AAA.csv";
+    std::string data_path = "/mnt/e/torch-clus/dataset/1_2d_T_drive_11317142.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/T-drive-AAA.csv";
     // Porto 2d
-    std::string data_path = "/mnt/e/torch-clus/dataset/2_2d_Porto_1277582.txt";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
+    // std::string data_path = "/mnt/e/torch-clus/dataset/2_2d_Porto_1277582.txt";
+    // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
     // ShapeNet 3d
     // std::string data_path = "/mnt/e/torch-clus/dataset/4_3d_Shapenet_9999999.txt";
     // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Shapenet-AAA.csv";
@@ -23,13 +23,14 @@ int main(){
     // std::string data_path = "/mnt/e/torch-clus/dataset/3_3d_3D-RD_434874.txt";
     // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/3D-RD-AAA.csv";
 
-    int data_scale = 1000000;
+    int data_scale = 430000;
+    // int data_dimension = 3;
     int data_dimension = 2;
     std::vector<int> k_list(3);
-    k_list[0] = 10000;
+    k_list[0] = 100;
     k_list[1] = 1000;
-    k_list[2] = 100;
-    // std::vector<int> k_list(1, 100);
+    k_list[2] = 10000;
+    // std::vector<int> k_list(1, 10000);
 
     for (auto k : k_list) {
         size_t pos = output_path.find("AAA");
@@ -44,16 +45,16 @@ int main(){
         // experiment->test_Lloyd();
         // experiment->test_DualTree();
         // experiment->test_NoBound();
-        experiment->test_NoKnn();
-        experiment->test_NoInB();
-        experiment->test_dask_means();
+        // experiment->test_NoKnn();
+        // experiment->test_NoInB();
+        // experiment->test_dask_means();
 
         // output_path = "/home/lzp/cs/dask-means-cpp/output/T-drive-AAA.csv";
-        output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
+        // output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Shapenet-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_PC-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_AVL-AAA.csv";
-        // output_path = "/home/lzp/cs/dask-means-cpp/output/3D-RD-AAA.csv";
+        output_path = "/home/lzp/cs/dask-means-cpp/output/3D-RD-AAA.csv";
     }
-    
+
 }
