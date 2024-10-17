@@ -5,11 +5,17 @@
 using namespace Utils;
 
 Hamerly::Hamerly(int max_iterations, double convergence_threshold)
-    : KMeansBase(max_iterations, convergence_threshold) {
-        ub = std::vector<double>(data_scale, 0.0);
-        lb = std::vector<double>(data_scale, 0.0);
-        max_drift = 0.0;
-    }
+    : KMeansBase(max_iterations, convergence_threshold) {}
+
+void Hamerly::initParameters(int data_scale, int data_dimension, int k) {
+    this->data_scale = data_scale;
+    this->data_dimension = data_dimension;
+    this->k = k;
+    this->labels.assign(this->data_scale, -1);
+    ub = std::vector<double>(data_scale, 0.0);
+    lb = std::vector<double>(data_scale, 0.0);
+    max_drift = 0.0;
+}
 
 void Hamerly::run() {
     int it = 0;     // iteration

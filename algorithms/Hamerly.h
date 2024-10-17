@@ -13,6 +13,8 @@ public:
 public:
     Hamerly(int max_iterations = MAX_ITERATIONS, double convergence_threshold = 0.001);
 
+    void initParameters(int data_scale, int data_dimension, int k) override;
+
     void run() override;
 
 protected:

@@ -6,18 +6,24 @@
 using namespace Utils;
 
 Yinyang::Yinyang(int max_iterations, double convergence_threshold)
-    : KMeansBase(max_iterations, convergence_threshold) {
-        group_num = k / 10;
-        ub = std::vector<double>(data_scale, 0.0);
-        global_lb = std::vector<double>(data_scale, 0.0);
-        group_lb = std::vector<std::vector<double>>(data_scale, std::vector<double>(group_num, 0.0));
-        // groups = std::vector<Group*>(group_num);
-        for (size_t i = 0; i < group_num; i++) {
-            Group* group = new Group();
-            groups.push_back(group); 
-        }
-        max_drift = 0.0;
+    : KMeansBase(max_iterations, convergence_threshold) {}
+
+void Yinyang::initParameters(int data_scale, int data_dimension, int k) {
+    this->data_scale = data_scale;
+    this->data_dimension = data_dimension;
+    this->k = k;
+    this->labels.assign(this->data_scale, -1);
+    group_num = k / 10;
+    ub = std::vector<double>(data_scale, 0.0);
+    global_lb = std::vector<double>(data_scale, 0.0);
+    group_lb = std::vector<std::vector<double>>(data_scale, std::vector<double>(group_num, 0.0));
+    // groups = std::vector<Group*>(group_num);
+    for (size_t i = 0; i < group_num; i++) {
+        Group* group = new Group();
+        groups.push_back(group); 
     }
+    max_drift = 0.0;
+}
 
 void Yinyang::run() {
     int it = 0;     // iteration
@@ -92,13 +98,12 @@ void Yinyang::assignLabels() {
             for (size_t i = 0; i < group_num; i++) {
                 if (ub[j] <= group_lb[j][i]) {
                     pruned_group_id.push_back(i);
-                    continue;
                 }
             }
         }
         // local filter
         auto data_point = dataset[j];
-        int nearest_centroid_id = -1;
+        int nearest_centroid_id = labels[j];
         double nearest_centroid_dis = HUGE_VAL;
 
         for (size_t i = 0; i < group_num; i++) {

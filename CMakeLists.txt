@@ -24,6 +24,9 @@ set(SOURCES
     algorithms/NoInB.cpp
     algorithms/NoKnn.cpp
     algorithms/DualTree.cpp
+    algorithms/Hamerly.cpp
+    algorithms/Drake.cpp
+    algorithms/Yinyang.cpp
     interface.cpp
     structure/BallTree.cpp
     structure/Node.cpp

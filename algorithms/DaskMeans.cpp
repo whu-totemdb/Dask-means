@@ -126,8 +126,8 @@ void DaskMeans::setInnerBound() {
     this->inner_id = std::vector<double>(k, -1.0);
     for (int i = 0; i < k; i++) {
         std::vector<KnnRes*> res(2);
-        for (int i = 0; i < 2; i++) {
-            res[i] = new KnnRes(ub[i]);
+        for (int j = 0; j < 2; j++) {
+            res[j] = new KnnRes(ub[i]);
         }
         ballTree2nn(centroid_list[i]->coordinate, *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;

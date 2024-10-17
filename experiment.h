@@ -4,6 +4,9 @@
 #include "algorithms/NoKnn.h"
 #include "algorithms/NoBound.h"
 #include "algorithms/DualTree.h"
+#include "algorithms/Hamerly.h"
+#include "algorithms/Drake.h"
+#include "algorithms/Yinyang.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -37,6 +40,10 @@ public:
     void test_DualTree();
 
     void test_Hamerly();
+
+    void test_Drake();
+
+    void test_Yinyang();
 };
 
 void Experiment::set_file_path(const std::string& data_path, const std::string& output_path) {
@@ -110,11 +117,30 @@ void Experiment::test_DualTree() {
 
 void Experiment::test_Hamerly() {
     cout << "=============starting Hamerly=============" << endl;
-    DualTree* dual_tree = new DualTree(leaf_capacity);
-    dual_tree->initParameters(data_scale, data_dimension, k);
-    dual_tree->load(data_path);
-    dual_tree->run();
-    // dual_tree->output(output_path);
-    dual_tree->writeRuntime(output_path);
-    delete dual_tree;
+    Hamerly* hamerly = new Hamerly();
+    hamerly->initParameters(data_scale, data_dimension, k);
+    hamerly->load(data_path);
+    hamerly->run();
+    hamerly->writeRuntime(output_path);
+    delete hamerly;
+}
+
+void Experiment::test_Drake() {
+    cout << "=============starting Drake=============" << endl;
+    Drake* drake = new Drake();
+    drake->initParameters(data_scale, data_dimension, k);
+    drake->load(data_path);
+    drake->run();
+    drake->writeRuntime(output_path);
+    delete drake;
+}
+
+void Experiment::test_Yinyang() {
+    cout << "=============starting Yinyang=============" << endl;
+    Yinyang* yinyang = new Yinyang();
+    yinyang->initParameters(data_scale, data_dimension, k);
+    yinyang->load(data_path);
+    yinyang->run();
+    yinyang->writeRuntime(output_path);
+    delete yinyang;
 }

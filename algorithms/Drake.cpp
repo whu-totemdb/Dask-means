@@ -6,25 +6,51 @@ using namespace Utils;
 
 Drake::Drake(int max_iterations, double convergence_threshold)
     : KMeansBase(max_iterations, convergence_threshold) {
-        b = k / 4;
-        ub = std::vector<double>(data_scale, 0.0);
-        a = std::vector<std::vector<KnnRes*>>(data_scale, std::vector<KnnRes*>());
         max_drift = 0.0;
         max_b = 0;
     }
 
+void Drake::initParameters(int data_scale, int data_dimension, int k) {
+    this->data_scale = data_scale;
+    this->data_dimension = data_dimension;
+    this->k = k;
+    this->labels.assign(this->data_scale, -1);
+    b = k / 4;
+    ub = std::vector<double>(data_scale, 0.0);
+    a = std::vector<std::vector<KnnRes*>>(data_scale, std::vector<KnnRes*>());
+}
+
 void Drake::run() {
     int it = 0;
+    double start_time, end_time;
+    start_time = clock();
     initializeCentroids();
     for (size_t i = 0; i < data_scale; i++) {
         sortCentroids(i, b + 1, centroid_list);
     }
+    end_time = clock();
+    init_time = double(end_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "initialize centroids in " << init_time << " s" << std::endl;
 
+    // main loop
     do {
+        start_time = clock();
         assignLabels();
         updateCentroids();
+
+        end_time = clock();
+        runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
+        it++;
     } while (!hasConverged() && it < max_iterations);
-    
+
+    // show total runtime
+    double total_runtime = 0.0;
+    for (size_t i = 0; i < max_iterations; i++) {
+        total_runtime += runtime[i];
+    }
+    std::cout << "successfully run Drake in " << total_runtime << " s" << std::endl;
+
 }
 
 void Drake::assignLabels() {
@@ -36,7 +62,7 @@ void Drake::assignLabels() {
         if (labels[j] != 1) {
             ub[j] += centroid_list[a[j][0]->id]->drift;
             for (int i = 1; i < b + 1; i++) {
-                a[j][i - 1]->dis -= centroid_list[a[j][i]->id]->drift;
+                a[j][i - 1]->dis -= centroid_list[a[j][i - 1]->id]->drift;
             }
         }
         bool flag = false;

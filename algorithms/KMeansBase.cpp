@@ -156,9 +156,10 @@ void KMeansBase::updateCentroids() {
         for (int data_id : data_id_list) {
             new_coordinate = addVector(new_coordinate, dataset[data_id]);
         }
-        new_coordinate = divideVector(new_coordinate, data_num);
-
-        centroid->updateCoordinate(new_coordinate);
+        if (data_num != 0) {
+            new_coordinate = divideVector(new_coordinate, data_num);
+            centroid->updateCoordinate(new_coordinate);
+        }
     }
 }
 
