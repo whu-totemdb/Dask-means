@@ -1,6 +1,8 @@
 #include "Drake.h"
 #include "../utils/Utils.h"
 #include <iostream>
+#include <algorithm>
+#include <cmath>
 
 using namespace Utils;
 
@@ -60,14 +62,16 @@ void Drake::assignLabels() {
 
     for (int j = 0; j < data_scale; j++) {
         if (labels[j] != 1) {
+            // 1.update upper bound and lower bound
             ub[j] += centroid_list[a[j][0]->id]->drift;
             for (int i = 1; i < b + 1; i++) {
-                a[j][i - 1]->dis -= centroid_list[a[j][i - 1]->id]->drift;
+                a[j][i]->dis -= centroid_list[a[j][i]->id]->drift;
             }
         }
         bool flag = false;
         for (int z = 1; z < b + 1; z++) {
-            if (ub[j] <= a[j][z - 1]->dis) {
+            // 2.check whether the node can be pruned
+            if (ub[j] <= a[j][z]->dis) {
                 sortCentroids(j, z + 1, centroid_list, a[j]);
                 centroid_list[a[j][0]->id]->cluster->addDataId(j);
                 labels[j] = a[j][0]->id;
@@ -82,6 +86,7 @@ void Drake::assignLabels() {
             labels[j] = a[j][0]->id;
         }
     }
+    this->b = std::max(k / 4, max_b);
 }
 
 void Drake::updateCentroids() {
@@ -105,17 +110,18 @@ void Drake::updateCentroids() {
 
 // given point_id, sort and get q nearest centroids
 void Drake::sortCentroids(int point_id, int q, std::vector<Centroid*> cent_list) {
+    
     a[point_id].clear();
-
     std::vector<double> point = dataset[point_id];
-    std::sort(cent_list.begin(), cent_list.end(), [this, point](const Centroid* a, const Centroid* b) {
+    std::partial_sort(cent_list.begin(), cent_list.begin() + q, cent_list.end(), 
+            [this, point](const Centroid* a, const Centroid* b) {
         double dist_a = distance1(point, a->coordinate);
         double dist_b = distance1(point, b->coordinate);
         return dist_a < dist_b;
     });
 
     ub[point_id] = distance1(cent_list[0]->coordinate, point);
-    for (size_t i = 1; i < q; i++) {
+    for (size_t i = 0; i < q; i++) {
         KnnRes* nearest_cent = new KnnRes();
         nearest_cent->dis = distance1(cent_list[i]->coordinate, point);
         nearest_cent->id = cent_list[i]->centroid_id;
@@ -124,21 +130,16 @@ void Drake::sortCentroids(int point_id, int q, std::vector<Centroid*> cent_list)
 }
 
 void Drake::sortCentroids(int point_id, int q, std::vector<Centroid*> cent_list,
-        std::vector<KnnRes*> res) {
-    a[point_id].clear();
-
+        std::vector<KnnRes*>& res) {
     std::vector<double> point = dataset[point_id];
-    std::sort(res.begin(), res.end(), [this, cent_list, point](const KnnRes* a, const KnnRes* b) {
-        double dist_a = distance1(point, cent_list[a->id]->coordinate);
-        double dist_b = distance1(point, cent_list[b->id]->coordinate);
-        return dist_a < dist_b;
+    for (size_t i = 0; i < q; i++) {
+        res[i]->dis = distance1(cent_list[res[i]->id]->coordinate, point);
+    }
+    
+    std::partial_sort(res.begin(), res.begin() + q, res.end(), 
+            [this](const KnnRes* a1, const KnnRes* b1) {
+        return a1->dis < b1->dis;
     });
 
-    ub[point_id] = distance1(cent_list[res[0]->id]->coordinate, point);
-    for (size_t i = 1; i < q; i++) {
-        KnnRes* nearest_cent = new KnnRes();
-        nearest_cent->dis = distance1(cent_list[res[i]->id]->coordinate, point);
-        nearest_cent->id = res[i]->id;
-        a[point_id].push_back(nearest_cent);
-    }
+    ub[point_id] = res[0]->dis;
 }

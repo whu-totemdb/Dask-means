@@ -7,6 +7,7 @@
 #include "algorithms/Hamerly.h"
 #include "algorithms/Drake.h"
 #include "algorithms/Yinyang.h"
+#include "algorithms/Elkan.h"
 #include "structure/BallTree.h"
 
 class Experiment {
@@ -44,6 +45,8 @@ public:
     void test_Drake();
 
     void test_Yinyang();
+
+    void test_Elkan();
 };
 
 void Experiment::set_file_path(const std::string& data_path, const std::string& output_path) {
@@ -143,4 +146,14 @@ void Experiment::test_Yinyang() {
     yinyang->run();
     yinyang->writeRuntime(output_path);
     delete yinyang;
+}
+
+void Experiment::test_Elkan() {
+    cout << "=============starting Elkan=============" << endl;
+    Elkan* elkan = new Elkan();
+    elkan->initParameters(data_scale, data_dimension, k);
+    elkan->load(data_path);
+    elkan->run();
+    elkan->writeRuntime(output_path);
+    delete elkan;
 }

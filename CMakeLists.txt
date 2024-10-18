@@ -27,6 +27,7 @@ set(SOURCES
     algorithms/Hamerly.cpp
     algorithms/Drake.cpp
     algorithms/Yinyang.cpp
+    algorithms/Elkan.cpp
     interface.cpp
     structure/BallTree.cpp
     structure/Node.cpp

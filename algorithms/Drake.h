@@ -7,9 +7,9 @@
 
 class Drake: public KMeansBase {
 public:
-    int b;
+    int b;      // number of lower bound (b)
     std::vector<double> ub;
-    std::vector<std::vector<KnnRes*>> a; // keep b nearest centroids for each point
+    std::vector<std::vector<KnnRes*>> a; // keep (b + 1) nearest centroids for each point (lb)
     double max_drift;
     int max_b;
 
@@ -27,7 +27,7 @@ protected:
 
     void sortCentroids(int point_id, int q, std::vector<Centroid*> cent_list);
     void sortCentroids(int point_id, int q, std::vector<Centroid*> cent_list,
-            std::vector<KnnRes*> res);
+            std::vector<KnnRes*>& res);
 };
 
 #endif  // DRAKE_H
