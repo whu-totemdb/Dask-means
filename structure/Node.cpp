@@ -38,13 +38,22 @@ void Node::initLeafNode(std::vector<int> data_id_list, int size) {
 
 // set the sum_vector and point_number after building the ball-tree
 void Node::setSum() {    
-    if (this->isLeaf()) {
+    if (this->isLeaf())
         return;
+
+    int size = pivot.size();
+    sum_vector = std::vector(size, 0.0);
+
+    if (leftChild != nullptr) {
+        leftChild->setSum();
+        sum_vector = Utils::addVector(sum_vector, leftChild->sum_vector);
+        point_number += leftChild->point_number;
     }
-    leftChild->setSum();
-    rightChild->setSum();
-    sum_vector = Utils::addVector(leftChild->sum_vector, rightChild->sum_vector);
-    point_number = leftChild->point_number + rightChild->point_number;
+    if (rightChild != nullptr) {
+        rightChild->setSum();
+        sum_vector = Utils::addVector(leftChild->sum_vector, rightChild->sum_vector);
+        point_number += rightChild->point_number;
+    }
 }
 
 std::vector<int> Node::getAllDataId() {

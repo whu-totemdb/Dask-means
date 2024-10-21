@@ -26,13 +26,13 @@ public:
     void buildBallTree(std::vector<Centroid*>& centroid_list, int k);
 
     void buildBallTree1(std::vector<std::vector<double>>& dataset, 
-        Node& node, std::vector<int> point_id_list, int height);
+        Node& node, std::vector<int>& point_id_list, int height);
     
     void buildBallTree1(std::vector<std::vector<double>>& dataset, 
-        Node& node, std::vector<int> point_id_list);
+        Node& node, std::vector<int>& point_id_list);
 
     void buildBallTree1(std::vector<Centroid*>& centroid_list, 
-        Node& node, std::vector<int> centroid_id_list);
+        Node& node, std::vector<int>& centroid_id_list);
 
     void buildBalancedBallTree(std::vector<std::vector<double>>& dataset,
         int data_scale, int data_dimension);
@@ -44,13 +44,13 @@ public:
         int data_scale, Node& node);
 
     void createNode(std::vector<std::vector<double>>& dataset, 
-        std::vector<int> point_id_list, int size, Node& node);
+        std::vector<int>& point_id_list, int size, Node& node);
 
     void createNode(std::vector<Centroid*>& centroid_list, 
         int data_scale, Node& node);
 
     void createNode(std::vector<Centroid*>& centroid_list, 
-        std::vector<int> centroid_id_list, int size, Node& node);
+        std::vector<int>& centroid_id_list, int size, Node& node);
 
 };
 

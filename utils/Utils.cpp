@@ -37,7 +37,7 @@ namespace Utils {
         return result;
     }
 
-    std::vector<double> sumVectorsInDataset(const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list) {
+    std::vector<double> sumVectorsInDataset(const std::vector<std::vector<double>>& dataset, std::vector<int>& point_id_list) {
         if (dataset.empty()) {
             throw std::invalid_argument("Dataset must not be empty.");
         }
@@ -76,7 +76,7 @@ namespace Utils {
         return result;
     }
 
-    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
+    std::vector<double> sumVectorsInDataset(std::vector<Centroid*>& centroid_list, std::vector<int>& centroid_id_list) {
         if (centroid_list.empty()) {
             throw std::invalid_argument("Dataset must not be empty.");
         }
@@ -159,7 +159,7 @@ namespace Utils {
     }
 
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        const std::vector<std::vector<double>>& dataset, std::vector<int> point_id_list) {
+        const std::vector<std::vector<double>>& dataset, std::vector<int>& point_id_list) {
 
         std::vector<int> point_ids(2, 0);       // [farthest point id, second ... id]
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
@@ -186,14 +186,14 @@ namespace Utils {
         std::vector<int> point_ids(2, 0);       // [farthest point id, second ... id]
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id = 0; point_id < data_scale; point_id++) {
-            double dis = distance1(center, centroid_list[point_id]->getCoordinate());
+            double dis = distance1(center, centroid_list[point_id]->coordinate);
             if (dis >= distances[0]) {
                 point_ids[0] = point_id;
                 distances[0] = dis;
             } 
         }
         for (int point_id = 0; point_id < data_scale; point_id++) {
-            double dis = distance1(centroid_list[point_ids[0]]->getCoordinate(), centroid_list[point_id]->getCoordinate());
+            double dis = distance1(centroid_list[point_ids[0]]->coordinate, centroid_list[point_id]->coordinate);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
@@ -203,19 +203,19 @@ namespace Utils {
     }
 
     std::vector<int> getTwoFarthestPoints(const std::vector<double>& center, 
-        std::vector<Centroid*>& centroid_list, std::vector<int> centroid_id_list) {
+        std::vector<Centroid*>& centroid_list, std::vector<int>& centroid_id_list) {
 
         std::vector<int> point_ids(2, 0);       // [farthest point id, second ... id]
         std::vector<double> distances(2, 0.0);  // [farthest distance, second ...]
         for (int point_id : centroid_id_list) {
-            double dis = distance1(center, centroid_list[point_id]->getCoordinate());
+            double dis = distance1(center, centroid_list[point_id]->coordinate);
             if (dis >= distances[0]) {
                 point_ids[0] = point_id;
                 distances[0] = dis;
             } 
         }
         for (int point_id : centroid_id_list) {
-            double dis = distance1(centroid_list[point_ids[0]]->getCoordinate(), centroid_list[point_id]->getCoordinate());
+            double dis = distance1(centroid_list[point_ids[0]]->coordinate, centroid_list[point_id]->coordinate);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;
                 distances[1] = dis;
@@ -348,7 +348,7 @@ namespace Utils {
     void calculate1nn(std::vector<double> point, KnnRes& res, 
         std::vector<Centroid*>& centroid_list) {
             for (int i = 0; i < centroid_list.size(); i++) {
-                double dis = distance1(point, centroid_list[i]->getCoordinate());
+                double dis = distance1(point, centroid_list[i]->coordinate);
                 if (dis <= res.dis) {
                     res.dis = dis;
                     res.id = i;
@@ -375,7 +375,7 @@ namespace Utils {
     void calculate2nn(std::vector<double> point, std::vector<KnnRes*>& res, 
         std::vector<Centroid*>& centroid_list) {
             for (int i = 0; i < centroid_list.size(); i++) {
-                double dis = distance1(point, centroid_list[i]->getCoordinate());
+                double dis = distance1(point, centroid_list[i]->coordinate);
                 if (dis <= res[0]->dis) {
                     res[1]->dis = res[0]->dis;
                     res[1]->id = res[0]->id;
@@ -392,7 +392,7 @@ namespace Utils {
             std::vector<Centroid*>& centroid_list) {
         if (root.leaf) {
             for (int id : root.data_id_list) {
-                double distance = distance1(point, centroid_list[id]->getCoordinate());
+                double distance = distance1(point, centroid_list[id]->coordinate);
                 if (res[0]->id == -1) {
                     res[0]->dis = distance;
                     res[0]->id = id;
@@ -458,7 +458,7 @@ namespace Utils {
 
     int findBestDimension(std::vector<Centroid*>& centroid_list, 
             const std::vector<int>& centroid_id_list) {
-        int num_dimensions = centroid_list[0]->getCoordinate().size();
+        int num_dimensions = centroid_list[0]->coordinate.size();
         std::vector<double> variances(num_dimensions, 0.0);
 
         // get variance in each dimension
@@ -468,15 +468,15 @@ namespace Utils {
 
             // mean
             for (int index : centroid_id_list) {
-                mean += centroid_list[index]->getCoordinate()[d];
+                mean += centroid_list[index]->coordinate[d];
             }
             mean /= count;
 
             // variance
             double variance = 0.0;
             for (int index : centroid_id_list) {
-                variance += (centroid_list[index]->getCoordinate()[d] - mean) 
-                            * (centroid_list[index]->getCoordinate()[d] - mean);
+                variance += (centroid_list[index]->coordinate[d] - mean) 
+                            * (centroid_list[index]->coordinate[d] - mean);
             }
             variance /= count;
 

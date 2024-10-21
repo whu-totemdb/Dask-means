@@ -12,26 +12,30 @@ int main(){
     // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
     // ShapeNet 3d
     // std::string data_path = "/mnt/e/torch-clus/dataset/4_3d_Shapenet_9999999.txt";
-    // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Shapenet-AAA.csv";
+    //  std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Shapenet-AAA.csv";
     // Argo_PC 3d
     // std::string data_path = "/mnt/e/torch-clus/dataset/Argo_PC_383277171.csv";
     // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_PC-AAA.csv";
     // Argo_AVL 2d
-    std::string data_path = "/mnt/e/torch-clus/dataset/Argo_AVL_17712524.csv";
-    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_AVL-AAA.csv";
+    // std::string data_path = "/mnt/e/torch-clus/dataset/Argo_AVL_17712524.csv";
+    // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_AVL-AAA.csv";
     // 3D-RD 3d (data_scale = 0.43M)
     // std::string data_path = "/mnt/e/torch-clus/dataset/3_3d_3D-RD_434874.txt";
     // std::string output_path = "/home/lzp/cs/dask-means-cpp/output/3D-RD-AAA.csv";
+    // argoverse 256d (data_scale = 80000)
+    std::string data_path = "/home/lzp/ap.txt";
+    std::string output_path = "/home/lzp/cs/dask-means-cpp/output/argo-AAA.csv";
 
-    int data_scale = 1000000;
+    // int data_scale = 1000000;
     // int data_scale = 430000;
-    int data_dimension = 3;
-    // int data_dimension = 2;
-    std::vector<int> k_list(2);
-    k_list[0] = 100;
-    k_list[1] = 1000;
+    int data_scale = 80000; //80000
+    // int data_dimension = 3;
+    int data_dimension = 256;
+    // std::vector<int> k_list(3);
+    // k_list[0] = 100;
+    // k_list[1] = 1000;
     // k_list[2] = 10000;
-    // std::vector<int> k_list(1, 10000);
+    std::vector<int> k_list(1, 10000);
 
     for (auto k : k_list) {
         size_t pos = output_path.find("AAA");
@@ -43,23 +47,24 @@ int main(){
         Experiment* experiment = new Experiment(data_scale, data_dimension, k);
         experiment->set_file_path(data_path, output_path);
 
-        // experiment->test_Lloyd();
-        // experiment->test_DualTree();
-        // experiment->test_NoBound();
+        // experiment->test_Lloyd(); 1
+       //  experiment->test_DualTree(); 2
+        // experiment->test_NoBound(); 0.8
         // experiment->test_NoKnn();
         // experiment->test_NoInB();
-        // experiment->test_dask_means();
-        // experiment->test_Hamerly();
-        // experiment->test_Yinyang();
-        // experiment->test_Elkan();
-        experiment->test_Drake();
+        experiment->test_dask_means();
+        //  experiment->test_Hamerly(); 1
+        // experiment->test_Yinyang(); 1
+        // experiment->test_Elkan(); 1
+        //experiment->test_Drake(); 1
 
         // output_path = "/home/lzp/cs/dask-means-cpp/output/T-drive-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Porto-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Shapenet-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_PC-AAA.csv";
-        output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_AVL-AAA.csv";
+        // output_path = "/home/lzp/cs/dask-means-cpp/output/Argo_AVL-AAA.csv";
         // output_path = "/home/lzp/cs/dask-means-cpp/output/3D-RD-AAA.csv";
+        // output_path = "/home/lzp/cs/dask-means-cpp/output/ap100-AAA.csv";
+        output_path = "/home/lzp/cs/dask-means-cpp/output/argo-AAA.csv";
     }
-
-}
+} 

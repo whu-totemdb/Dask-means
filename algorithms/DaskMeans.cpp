@@ -132,6 +132,9 @@ void DaskMeans::setInnerBound() {
         ballTree2nn(centroid_list[i]->coordinate, *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
         inner_id[i] = res[1]->id;
+        for (int j = 0; j < 2; j++) {
+            delete res[j];
+        }
     }
 }
 
@@ -174,8 +177,12 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     if (!node.leaf) {
         // 3. split the node into two child node
         assignToCluster(node, -1);
-        assignLabels(*node.leftChild, res[1]->dis + node.radius);
-        assignLabels(*node.rightChild, res[1]->dis + node.radius);
+        if (node.leftChild != nullptr) {
+            assignLabels(*node.leftChild, res[1]->dis + node.radius);
+        }
+        if (node.rightChild != nullptr) {
+            assignLabels(*node.rightChild, res[1]->dis + node.radius);
+        }
     } else {
         if (node.centroid_id != -1) {
             Cluster* old_cluster = centroid_list[node.centroid_id]->cluster;
@@ -207,7 +214,12 @@ void DaskMeans::assignLabels(Node& node, double ub) {
             centroid_id = res[0].id;
             Cluster* new_cluster = centroid_list[centroid_id]->cluster;
             new_cluster->dataIn(1, data);
+
+            delete res;
         }
+    }
+    for (int i = 0; i < 2; i++) {
+        delete res[i];
     }
 }
 
@@ -241,7 +253,11 @@ void DaskMeans::assignToCluster(Node& node, int centroid_id) {
             node.centroid_id_for_data[i] = centroid_id;
         }
     } else {
-        assignToCluster(*node.leftChild, centroid_id);
-        assignToCluster(*node.rightChild, centroid_id);
+        if (node.leftChild != nullptr) {
+            assignToCluster(*node.leftChild, centroid_id);
+        }
+        if (node.rightChild != nullptr) {
+            assignToCluster(*node.rightChild, centroid_id);
+        }
     }
 }

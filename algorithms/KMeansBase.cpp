@@ -125,7 +125,7 @@ void KMeansBase::initializeCentroids() {
     std::set<int> selected_ids;
 
     for (int i = 0; i < k; i ++) {
-        unsigned seed = 6;      // fixed seed
+        unsigned seed = 6;      // fixed seed 6
         std::mt19937 gen(seed);
         // std::random_device seed;    // random seed
         // std::mt19937 gen(seed());

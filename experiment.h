@@ -72,7 +72,7 @@ void Experiment::test_dask_means() {
     dask_means->load(data_path);
     dask_means->run();
     // dask_means->output(output_path);
-    dask_means->writeRuntime(output_path);
+    // dask_means->writeRuntime(output_path);
     delete dask_means;
 }
 
@@ -83,7 +83,7 @@ void Experiment::test_NoInB() {
     noInB->load(data_path);
     noInB->run();
     // noInB->output(output_path);
-    noInB->writeRuntime(output_path);
+    // noInB->writeRuntime(output_path);
     delete noInB;
 }
 
