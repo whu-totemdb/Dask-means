@@ -15,9 +15,7 @@ protected:
     std::string data_path;
     std::string output_path;
 
-    int leaf_capacity = 6;
-    // int leaf_capacity = 13;
-    // int leaf_capacity = 31;
+    int leaf_capacity = 30; // change the leaf node capacity if needed
     int data_scale;
     int data_dimension;
     int k;
@@ -62,8 +60,7 @@ void Experiment::test_Lloyd() {
     lloyd->initParameters(data_scale, data_dimension, k);
     lloyd->load(data_path);
     lloyd->run();
-    // lloyd->output(output_path);
-    lloyd->writeRuntime(output_path);
+    // lloyd->writeRuntime(output_path);
     delete lloyd;
 }
 
@@ -73,7 +70,6 @@ void Experiment::test_dask_means() {
     dask_means->initParameters(data_scale, data_dimension, k);
     dask_means->load(data_path);
     dask_means->run();
-    // dask_means->output(output_path);
     // dask_means->writeRuntime(output_path);
     delete dask_means;
 }
@@ -84,7 +80,6 @@ void Experiment::test_NoInB() {
     noInB->initParameters(data_scale, data_dimension, k);
     noInB->load(data_path);
     noInB->run();
-    // noInB->output(output_path);
     // noInB->writeRuntime(output_path);
     delete noInB;
 }
@@ -95,8 +90,7 @@ void Experiment::test_NoKnn() {
     noKnn->initParameters(data_scale, data_dimension, k);
     noKnn->load(data_path);
     noKnn->run();
-    // noKnn->output(output_path);
-    noKnn->writeRuntime(output_path);
+    // noKnn->writeRuntime(output_path);
     delete noKnn;
 }
 
@@ -105,7 +99,7 @@ void Experiment::test_NoBound() {
     NoBound* no_bound = new NoBound();
     no_bound->initParameters(data_scale, data_dimension, k);
     no_bound->run(data_path.c_str());
-    no_bound->writeRuntime(output_path);
+    // no_bound->writeRuntime(output_path);
     delete no_bound;
 }
 
@@ -115,8 +109,7 @@ void Experiment::test_DualTree() {
     dual_tree->initParameters(data_scale, data_dimension, k);
     dual_tree->load(data_path);
     dual_tree->run();
-    // dual_tree->output(output_path);
-    dual_tree->writeRuntime(output_path);
+    // dual_tree->writeRuntime(output_path);
     delete dual_tree;
 }
 
@@ -126,7 +119,7 @@ void Experiment::test_Hamerly() {
     hamerly->initParameters(data_scale, data_dimension, k);
     hamerly->load(data_path);
     hamerly->run();
-    hamerly->writeRuntime(output_path);
+    // hamerly->writeRuntime(output_path);
     delete hamerly;
 }
 
@@ -136,7 +129,7 @@ void Experiment::test_Drake() {
     drake->initParameters(data_scale, data_dimension, k);
     drake->load(data_path);
     drake->run();
-    drake->writeRuntime(output_path);
+    // drake->writeRuntime(output_path);
     delete drake;
 }
 
@@ -146,7 +139,7 @@ void Experiment::test_Yinyang() {
     yinyang->initParameters(data_scale, data_dimension, k);
     yinyang->load(data_path);
     yinyang->run();
-    yinyang->writeRuntime(output_path);
+    // yinyang->writeRuntime(output_path);
     delete yinyang;
 }
 
@@ -156,6 +149,6 @@ void Experiment::test_Elkan() {
     elkan->initParameters(data_scale, data_dimension, k);
     elkan->load(data_path);
     elkan->run();
-    elkan->writeRuntime(output_path);
+    // elkan->writeRuntime(output_path);
     delete elkan;
 }

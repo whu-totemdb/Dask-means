@@ -33,7 +33,6 @@ void NoKnn::run() {
         setInnerBound();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
         updateCentroids();
-        // output("/home/lzp/cs/dask-means-cpp/output/NoKnn_output.txt");
 
         end_time = clock();
         runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
@@ -71,22 +70,13 @@ void NoKnn::assignLabels(Node& node, double ub) {
         distance1(node.pivot, centroid_list[node.centroid_id]->coordinate) 
         + node.radius < inner_bound[node.centroid_id] / 2) 
         { return; }
-    if (node.centroid_id != -1) {
-        node.ub += centroid_list[node.centroid_id]->drift;
-        if (node.ub < inner_bound[node.centroid_id] / 2)
-            return;
-    }
 
     // 2. find two nearest centroid for the node (pruning 2)
     std::vector<KnnRes*> res(2);
     for (int i = 0; i < 2; i++) {
         res[i] = new KnnRes(ub);
     }
-    ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
-    node.ub =  res[0]->dis + node.radius;
-    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) { 
-        return; 
-    }
+    calculate2nn(node.pivot, res, centroid_list);
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
         if (res[0]->id == node.centroid_id) {
             return;
@@ -114,9 +104,6 @@ void NoKnn::assignLabels(Node& node, double ub) {
             // if the point is assigned before
             if (centroid_id != -1 && distance1(data, centroid_list[centroid_id]->coordinate) 
                 < inner_bound[centroid_id] / 2 )
-                { return; }
-            if (centroid_id != -1 && mdistance(data, centroid_list[centroid_id]->coordinate)
-                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate))
                 { return; }
 
             // use 1nn

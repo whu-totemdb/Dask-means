@@ -47,21 +47,8 @@ void DualTree::run() {
         start_time = clock();
         buildCentroidIndex(k);
         setInnerBound();
-        // end_time = clock();
-        // std::cout << "buildCentroidIndex() && setInnerBound(): " 
-        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
-
-        // start_time = clock();
         assignLabels(*data_index->root);
-        // end_time = clock();
-        // std::cout << "assignLabels(): " 
-        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
-
-        // start_time = clock();
         updateCentroids();
-        // end_time = clock();
-        // std::cout << "updateCentroids(): " 
-                // << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
 
         end_time = clock();
         runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
@@ -116,7 +103,6 @@ void DualTree::assignLabels(KdTreeNode& node) {
         if (node.ub + node.r < inner_bound[node.centroid_id] / 2)
             return;
 
-        
         node.resetBound(dataset, *centroid_index->root, centroid_list);
         if (node.ub + node.r < inner_bound[node.centroid_id] / 2)
             return;

@@ -17,7 +17,6 @@ void Yinyang::initParameters(int data_scale, int data_dimension, int k) {
     ub = std::vector<double>(data_scale, 0.0);
     global_lb = std::vector<double>(data_scale, 0.0);
     group_lb = std::vector<std::vector<double>>(data_scale, std::vector<double>(group_num, 0.0));
-    // groups = std::vector<Group*>(group_num);
     for (size_t i = 0; i < group_num; i++) {
         Group* group = new Group();
         groups.push_back(group); 

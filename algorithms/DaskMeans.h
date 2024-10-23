@@ -19,8 +19,6 @@ protected:
     int capacity;
 
     // for debug
-    // double time_knn1 = 0.0;
-    // double time_knn2 = 0.0;
     std::vector<double> inner_id;
     double pruned_point = 0.0;
 

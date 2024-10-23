@@ -36,12 +36,8 @@ void DaskMeans::run() {
 
     // main loop
     do {
-        // int pruned = pruned_point;
-        // time_knn1 = 0.0;
-        // time_knn2 = 0.0;
-        // start_time = clock();
-        buildCentroidIndex();
         start_time = clock();
+        buildCentroidIndex();
         if (it == 0) {
             ub = std::vector<double>(k, std::numeric_limits<double>::max());
         } else {
@@ -50,31 +46,13 @@ void DaskMeans::run() {
             }
         }
         setInnerBound();
-        // end_time = clock();
-        // std::cout << "buildCentroidIndex() && setInnerBound(): " 
-        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
-
-        // start_time = clock();
         assignLabels(*data_index->root, std::numeric_limits<double>::max());
-        // end_time = clock();
-        // std::cout << "assignLabels(): " 
-        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
-
-        // start_time = clock();
         updateCentroids();
-        // end_time = clock();
-        // std::cout << "updateCentroids(): " 
-        //         << double(end_time - start_time) / CLOCKS_PER_SEC << std::endl;
 
         end_time = clock();
         runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
-        // std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
-        // std::cout << "iter: " << it << ", pruned point: " << pruned_point - pruned << std::endl;
-        
+        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
         it++;
-
-        // std::cout << "time knn1: " << time_knn1 << " s" << std::endl;
-        // std::cout << "time knn2: " << time_knn2 << " s" << std::endl;
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
@@ -144,33 +122,17 @@ void DaskMeans::setInnerBound() {
 
 void DaskMeans::assignLabels(Node& node, double ub) {
     // 1. if the node is assigned before (pruning 1)
-    // if (node.centroid_id != -1  && 
-    //     distance1(node.pivot, centroid_list[node.centroid_id]->getCoordinate()) 
-    //     + node.radius < inner_bound[node.centroid_id] / 2) 
-    //     { return; }
-    if (node.centroid_id != -1) {
-        node.ub += centroid_list[node.centroid_id]->drift;
-        if (node.ub < inner_bound[node.centroid_id] / 2) {
-            pruned_point += node.point_number;
-            return;
-        }
-    }
+    if (node.centroid_id != -1  && 
+        distance1(node.pivot, centroid_list[node.centroid_id]->getCoordinate()) 
+        + node.radius < inner_bound[node.centroid_id] / 2) 
+        { return; }
 
     // 2. find two nearest centroid for the node (pruning 2)
     std::vector<KnnRes*> res(2);
     for (int i = 0; i < 2; i++) {
         res[i] = new KnnRes(ub);
     }
-    // double start_time, end_time;
-    // start_time = clock();
     ballTree2nn(node.pivot, *(centroid_index->root), res, centroid_list);
-    // end_time = clock();
-    // time_knn1 += double(end_time - start_time) / CLOCKS_PER_SEC;
-    node.ub =  res[0]->dis + node.radius;
-    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) {
-        pruned_point += node.point_number;
-        return; 
-    }
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
         if (res[0]->id == node.centroid_id) {
             pruned_point += node.point_number;
@@ -207,19 +169,10 @@ void DaskMeans::assignLabels(Node& node, double ub) {
                     pruned_point += 1;
                     return;
                 }
-            if (centroid_id != -1 && mdistance(data, centroid_list[centroid_id]->coordinate)
-                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate)) {
-                    pruned_point += 1;
-                    return;
-                }
 
             // use 1nn
             KnnRes* res = new KnnRes(ub);
-            // double start_time, end_time;
-            // start_time = clock();
             ballTree1nn(data, *(centroid_index->root), *res, centroid_list);
-            // end_time = clock();
-            // time_knn2 += double(end_time - start_time) / CLOCKS_PER_SEC;
             if (centroid_id != -1) {
                 Cluster* old_cluster = centroid_list[centroid_id]->cluster;
                 old_cluster->dataOut(1, data);
