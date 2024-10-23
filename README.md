@@ -7,37 +7,14 @@
 
 The datasets we use are all low-dimensional (2-3 dimensional) spatial vectors, with brief information as shown in the list below:
 
-|    Datasets    | T-drive | Proto | Argo-AVL | Argo-PC | 3D-RD | Shapenet |
-| :------------: | :-----: | :---: | :------: | :-----: | :---: | :------: |
-| Dimensionality |    2    |   2   |    2     |    3    |   3   |    3     |
-| Dataset Scale  |   11M   | 1.27M |   177M   |  383M   |  4M   |   100M   |
-
-Furthermore, the specific information and download links for each dataset are as follows:
-
-**[T-drive](https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/)**:
-
-The T-Drive trajectory dataset contains GPS trajectories of 10,357 taxis in Beijing from February 2 to February 8, 2008.
-
-
-**[Proto](https://figshare.com/articles/dataset/Porto_taxi_trajectories/12302165?file=22677902)**:
-
-A CSV dataset containing taxi trajectories recorded over one year (from 2013/07/01 to 2014/06/30) in the city of Porto, in Portugal.
-
-**[Argo-AVL](https://www.argoverse.org/av2.html)**: 
-
-Trajectory dataset from Argoverse, recording the trajectory data of autonomous vehicles.
-
-**[Argo-PC](https://github.com/ApolloScapeAuto/dataset-api/tree/master/3d_detection_tracking)**: 
-
-Point cloud dataset from Argoverse, representing lidar-detected objects surrounding vehicles.
-
-**[3D-RD](https://networkrepository.com/3D-spatial-network.php)**: 
-
-The 3D-spatial-network dataset is a machine learning dataset that contains 3D road network information of the North Jutland region in Denmark.
-
-**[Shapenet](https://shapenet.org/)**:
-
-Shapenet is a widely used point cloud dataset for 3D shape understanding and analysis.
+|                           Datasets                           | Dataset Scale | Dimension |                         Description                          |
+| :----------------------------------------------------------: | :-----------: | :-------: | :----------------------------------------------------------: |
+| **[T-drive](https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/)** |     11.3M     |     2     | The T-Drive trajectory dataset contains GPS trajectories of 10,357 taxis in Beijing from February 2 to February 8, 2008. |
+| **[Proto](https://figshare.com/articles/dataset/Porto_taxi_trajectories/12302165?file=22677902)** |     1.27M     |     2     | A CSV dataset containing taxi trajectories recorded over one year (from 2013/07/01 to 2014/06/30) in the city of Porto, in Portugal. |
+|      **[Argo-AVL](https://www.argoverse.org/av2.html)**      |     17.7M     |     2     | Trajectory dataset from Argoverse, recording the trajectory data of autonomous vehicles. |
+| **[Argo-PC](https://github.com/ApolloScapeAuto/dataset-api/tree/master/3d_detection_tracking)** |     383M      |     3     | Point cloud dataset from Argoverse, representing lidar-detected objects surrounding vehicles. |
+| **[3D-RD](https://networkrepository.com/3D-spatial-network.php)** |    0.434M     |     3     | The 3D-spatial-network dataset is a machine learning dataset that contains 3D road network information of the North Jutland region in Denmark. |
+|            **[Shapenet](https://shapenet.org/)**             |      10M      |     3     | Shapenet is a widely used point cloud dataset for 3D shape understanding and analysis. |
 
 
 ## 3 Comparison Algorithm
@@ -114,9 +91,8 @@ make
 
 ### 4.2 Cost Model
 
-#### Runtime Prediction
+**Runtime Prediction**
 
 - You can find all the relevant code for runtime adjustments in `~/predictor/`.
-
 - The code for runtime prediction is in the file `~/predictor/main.py`.
 - The code for runtime adjustment is in the file `~/predictor/GaussinProcess.py`.
