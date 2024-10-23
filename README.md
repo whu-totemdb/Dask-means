@@ -14,35 +14,30 @@ The datasets we use are all low-dimensional (2-3 dimensional) spatial vectors, w
 
 Furthermore, the specific information and download links for each dataset are as follows:
 
-**T-drive**:
+**[T-drive](https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/)**:
 
-- The T-Drive trajectory dataset contains GPS trajectories of 10,357 taxis in Beijing from February 2 to February 8, 2008.
-- Link: [T-Drive trajectory dataset](https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/)
+The T-Drive trajectory dataset contains GPS trajectories of 10,357 taxis in Beijing from February 2 to February 8, 2008.
 
-**Proto**:
 
-- A CSV dataset containing taxi trajectories recorded over one year (from 2013/07/01 to 2014/06/30) in the city of Porto, in Portugal.
-- Link: [Porto taxi trajectories](https://figshare.com/articles/dataset/Porto_taxi_trajectories/12302165?file=22677902)
+**[Proto](https://figshare.com/articles/dataset/Porto_taxi_trajectories/12302165?file=22677902)**:
 
-**Argo-AVL**: 
+A CSV dataset containing taxi trajectories recorded over one year (from 2013/07/01 to 2014/06/30) in the city of Porto, in Portugal.
 
-- Trajectory dataset from Argoverse, recording the trajectory data of autonomous vehicles.
-- Link: [Argoverse 2: Trajectory](https://www.argoverse.org/av2.html)
+**[Argo-AVL](https://www.argoverse.org/av2.html)**: 
 
-**Argo-PC**: 
+Trajectory dataset from Argoverse, recording the trajectory data of autonomous vehicles.
 
-- Point cloud dataset from Argoverse, representing lidar-detected objects surrounding vehicles.
-- Link: [The 3D Lidar Object Detection and Tracking Challenge of Apolloscape Dataset](https://github.com/ApolloScapeAuto/dataset-api/tree/master/3d_detection_tracking)
+**[Argo-PC](https://github.com/ApolloScapeAuto/dataset-api/tree/master/3d_detection_tracking)**: 
 
-**3D-RD**: 
+Point cloud dataset from Argoverse, representing lidar-detected objects surrounding vehicles.
 
-- The 3D-spatial-network dataset is a machine learning dataset that contains 3D road network information of the North Jutland region in Denmark.
-- Link: [3D-spatial-network | Machine Learning Data](https://networkrepository.com/3D-spatial-network.php)
+**[3D-RD](https://networkrepository.com/3D-spatial-network.php)**: 
 
-**Shapenet**:
+The 3D-spatial-network dataset is a machine learning dataset that contains 3D road network information of the North Jutland region in Denmark.
 
-- Shapenet is a widely used point cloud dataset for 3D shape understanding and analysis.
-- Link: [Shapenet](https://shapenet.org/)
+**[Shapenet](https://shapenet.org/)**:
+
+Shapenet is a widely used point cloud dataset for 3D shape understanding and analysis.
 
 
 ## 3 Comparison Algorithm
@@ -117,17 +112,11 @@ make
 ./DaskMeans
 ```
 
-### Cost Model
-
-#### Memory Prediction
-
-The core code for calculating memory overhead is in the function `getAllMemory()` in file `./src/au/edu/rmit/trajectory/clustering/kmeans/keamsAlgorithm.java`. This function will be called during the execution of each comparison algorithm in `test_DasKmeans()`.
-
-Moreover, you can also manually adjust the capacity of leaf nodes in function `experiments()` of file `./src/au/edu/rmit/trajectory/clustering/kmeans/keamsAlgorithm.java`.
+### 4.2 Cost Model
 
 #### Runtime Prediction
 
-- You can find all the relevant code for runtime adjustments in `./refinement/`.
-- `kmeans-time-total.csv` and `kmeans-time-series.csv` are the training datasets that represent the overall runtime and the time of each iteration, respectively.
-- The code for runtime prediction is in the file `main.py`.
-- The code for runtime adjustment is in the file `GaussinProcess.py`.
+- You can find all the relevant code for runtime adjustments in `~/predictor/`.
+
+- The code for runtime prediction is in the file `~/predictor/main.py`.
+- The code for runtime adjustment is in the file `~/predictor/GaussinProcess.py`.
