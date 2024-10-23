@@ -26,8 +26,8 @@ void BallTree::buildBallTree(std::vector<std::vector<double>>& dataset, int data
     for (int i = 0; i < data_scale; i++) {
         point_id_list[i] = i;
     }
-    buildBallTree1(dataset, *root, point_id_list, 4);
-    // buildBallTree1(dataset, *root, point_id_list);
+    // buildBallTree1(dataset, *root, point_id_list, 4);
+    buildBallTree1(dataset, *root, point_id_list);
     initBallTree();
 }
 
@@ -101,11 +101,14 @@ void BallTree::buildBallTree1(std::vector<std::vector<double>>& dataset,
     std::vector<double> vec2 = dataset[node.farthest_point_id[1]];
     std::vector<int> point_id_list1;
     std::vector<int> point_id_list2;
+    int cnt = 0;
 
     for (int point_id : point_id_list) {
         std::vector<double> point = dataset[point_id];
-        if (distance2(vec1, point) <= distance2(vec2, point)) {
+        if (distance2(vec1, point) <= distance2(vec2, point) && cnt <= size / 2) {
+        // if (distance2(vec1, point) <= distance2(vec2, point)) {
             point_id_list1.push_back(point_id);
+            cnt += 1;
         } else {
             point_id_list2.push_back(point_id);
         }
@@ -137,14 +140,15 @@ void BallTree::buildBallTree1(std::vector<Centroid*>& centroid_list,
     }
     // is not leaf node
     // 1. split the point_id_list into two list
-    std::vector<double> vec1 = centroid_list[node.farthest_point_id[0]]->getCoordinate();
-    std::vector<double> vec2 = centroid_list[node.farthest_point_id[1]]->getCoordinate();
+    std::vector<double> vec1 = centroid_list[node.farthest_point_id[0]]->coordinate;
+    std::vector<double> vec2 = centroid_list[node.farthest_point_id[1]]->coordinate;
     std::vector<int> centroid_id_list1;
     std::vector<int> centroid_id_list2;
     int cnt = 0;
 
     for (int centroid_id : centroid_id_list) {
-        std::vector<double> coordinate = centroid_list[centroid_id]->getCoordinate();
+        std::vector<double> coordinate = centroid_list[centroid_id]->coordinate;
+        // if (distance2(vec1, coordinate) <= distance2(vec2, coordinate)) {
         if (distance2(vec1, coordinate) <= distance2(vec2, coordinate) && cnt <= size / 2) {
             centroid_id_list1.push_back(centroid_id);
             cnt += 1;

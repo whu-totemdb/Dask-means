@@ -62,15 +62,15 @@ namespace Utils {
             throw std::invalid_argument("Dataset must not be empty.");
         }
         
-        size_t data_dimension = centroid_list[0]->getCoordinate().size();
+        size_t data_dimension = centroid_list[0]->coordinate.size();
         std::vector<double> result(data_dimension, 0.0);
 
         for (auto centroid : centroid_list) {
-            if (centroid->getCoordinate().size() != data_dimension) {
+            if (centroid->coordinate.size() != data_dimension) {
                 throw std::invalid_argument("All vectors in the dataset must have the same dimension.");
             }
             for (size_t j = 0; j < data_dimension; ++j) {
-                result[j] += centroid->getCoordinate()[j];
+                result[j] += centroid->coordinate[j];
             }
         }
         return result;
@@ -81,15 +81,15 @@ namespace Utils {
             throw std::invalid_argument("Dataset must not be empty.");
         }
         
-        size_t data_dimension = centroid_list[0]->getCoordinate().size();
+        size_t data_dimension = centroid_list[0]->coordinate.size();
         std::vector<double> result(data_dimension, 0.0);
 
         for (int centroid_id : centroid_id_list) {
-            if (centroid_list[centroid_id]->getCoordinate().size() != data_dimension) {
+            if (centroid_list[centroid_id]->coordinate.size() != data_dimension) {
                 throw std::invalid_argument("All vectors in the dataset must have the same dimension.");
             }
             for (size_t j = 0; j < data_dimension; ++j) {
-                result[j] += centroid_list[centroid_id]->getCoordinate()[j];
+                result[j] += centroid_list[centroid_id]->coordinate[j];
             }
         }
         return result;
@@ -149,6 +149,8 @@ namespace Utils {
             } 
         }
         for (int point_id = 0; point_id < data_scale; point_id++) {
+            if (point_id == point_ids[0])
+                continue;
             double dis = distance1(dataset[point_ids[0]], dataset[point_id]);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;
@@ -171,6 +173,8 @@ namespace Utils {
             } 
         }
         for (int point_id : point_id_list) {
+            if (point_id == point_ids[0])
+                continue;
             double dis = distance1(dataset[point_ids[0]], dataset[point_id]);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;
@@ -193,6 +197,8 @@ namespace Utils {
             } 
         }
         for (int point_id = 0; point_id < data_scale; point_id++) {
+            if (point_id == point_ids[0])
+                continue;
             double dis = distance1(centroid_list[point_ids[0]]->coordinate, centroid_list[point_id]->coordinate);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;
@@ -215,6 +221,8 @@ namespace Utils {
             } 
         }
         for (int point_id : centroid_id_list) {
+            if (point_id == point_ids[0])
+                continue;
             double dis = distance1(centroid_list[point_ids[0]]->coordinate, centroid_list[point_id]->coordinate);
             if (dis >= distances[1]) {
                 point_ids[1] = point_id;

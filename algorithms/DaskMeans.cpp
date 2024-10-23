@@ -36,6 +36,7 @@ void DaskMeans::run() {
 
     // main loop
     do {
+        // int pruned = pruned_point;
         // time_knn1 = 0.0;
         // time_knn2 = 0.0;
         // start_time = clock();
@@ -67,7 +68,9 @@ void DaskMeans::run() {
 
         end_time = clock();
         runtime[it] = double(end_time - start_time) / CLOCKS_PER_SEC;
-        std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
+        // std::cout << "iter: " << it << ", runtime: " << runtime[it] << " s" << std::endl;
+        // std::cout << "iter: " << it << ", pruned point: " << pruned_point - pruned << std::endl;
+        
         it++;
 
         // std::cout << "time knn1: " << time_knn1 << " s" << std::endl;
@@ -79,6 +82,7 @@ void DaskMeans::run() {
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
+    std::cout << "iter: " << it << ", pruned totally: " << pruned_point / 1000000 << std::endl;
     std::cout << "successfully run Dask-means in " << total_runtime << " s" << std::endl;
 }
 
@@ -146,8 +150,10 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     //     { return; }
     if (node.centroid_id != -1) {
         node.ub += centroid_list[node.centroid_id]->drift;
-        if (node.ub < inner_bound[node.centroid_id] / 2)
+        if (node.ub < inner_bound[node.centroid_id] / 2) {
+            pruned_point += node.point_number;
             return;
+        }
     }
 
     // 2. find two nearest centroid for the node (pruning 2)
@@ -161,16 +167,19 @@ void DaskMeans::assignLabels(Node& node, double ub) {
     // end_time = clock();
     // time_knn1 += double(end_time - start_time) / CLOCKS_PER_SEC;
     node.ub =  res[0]->dis + node.radius;
-    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) { 
+    if (node.centroid_id != -1 && node.ub < inner_bound[node.centroid_id] / 2) {
+        pruned_point += node.point_number;
         return; 
     }
     if (res[1]->dis - res[0]->dis > 2 * node.radius) {
         if (res[0]->id == node.centroid_id) {
+            pruned_point += node.point_number;
             return;
         }
         assignToCluster(node, res[0]->id);
         Cluster* new_cluster = centroid_list[node.centroid_id]->cluster;
         new_cluster->dataIn(node.point_number, node.sum_vector);
+        pruned_point += node.point_number;
         return;
     }
 
@@ -194,11 +203,15 @@ void DaskMeans::assignLabels(Node& node, double ub) {
             int centroid_id = node.centroid_id_for_data[i];
             // if the point is assigned before
             if (centroid_id != -1 && distance1(data, centroid_list[centroid_id]->coordinate) 
-                < inner_bound[centroid_id] / 2 )
-                { return; }
+                < inner_bound[centroid_id] / 2 ) {
+                    pruned_point += 1;
+                    return;
+                }
             if (centroid_id != -1 && mdistance(data, centroid_list[centroid_id]->coordinate)
-                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate))
-                { return; }
+                <= mdistance(data, centroid_list[inner_id[centroid_id]]->coordinate)) {
+                    pruned_point += 1;
+                    return;
+                }
 
             // use 1nn
             KnnRes* res = new KnnRes(ub);

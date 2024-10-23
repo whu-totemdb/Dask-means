@@ -15,7 +15,9 @@ protected:
     std::string data_path;
     std::string output_path;
 
-    int leaf_capacity = 30;
+    int leaf_capacity = 6;
+    // int leaf_capacity = 13;
+    // int leaf_capacity = 31;
     int data_scale;
     int data_dimension;
     int k;

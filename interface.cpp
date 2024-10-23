@@ -31,11 +31,14 @@ int main(){
     int data_scale = 80000; //80000
     // int data_dimension = 3;
     int data_dimension = 256;
-    // std::vector<int> k_list(3);
-    // k_list[0] = 100;
-    // k_list[1] = 1000;
+    // int data_dimension = 2;
+    std::vector<int> k_list(2);
+    k_list[0] = 100;
+    k_list[1] = 1000;
     // k_list[2] = 10000;
-    std::vector<int> k_list(1, 10000);
+    // std::vector<int> k_list(1, 10000);
+
+    cout << "running: " << data_path << endl;
 
     for (auto k : k_list) {
         size_t pos = output_path.find("AAA");
@@ -50,9 +53,9 @@ int main(){
         // experiment->test_Lloyd(); 1
        //  experiment->test_DualTree(); 2
         // experiment->test_NoBound(); 0.8
-        // experiment->test_NoKnn();
+        experiment->test_NoKnn();
         // experiment->test_NoInB();
-        experiment->test_dask_means();
+        // experiment->test_dask_means();
         //  experiment->test_Hamerly(); 1
         // experiment->test_Yinyang(); 1
         // experiment->test_Elkan(); 1
