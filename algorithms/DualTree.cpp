@@ -57,7 +57,7 @@ void DualTree::run() {
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
-    double total_runtime = 0.0;
+    double total_runtime = init_time;
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
@@ -175,6 +175,10 @@ void DualTree::assignPoint(KdTreeNode& node, int index) {
     point_ub[point_id] = res[0]->dis;
 
     node.centroid_id_for_data[index] = res[0]->id;
+
+    for (int j = 0; j < 2; j++) {
+        delete res[j];
+    }
 
     // double nearest_dis = std::numeric_limits<double>::max();
     // double second_nearest_dis = std::numeric_limits<double>::max();

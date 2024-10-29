@@ -87,7 +87,13 @@ void NoInB::assignLabels(Node& node, double ub) {
             node.centroid_id_for_data[i] = res[0].id;
             Cluster* new_cluster = centroid_list[node.centroid_id_for_data[i]]->getCluster();
             new_cluster->dataIn(dataset[node.data_id_list[i]], node.data_id_list[i]);
+
+            delete res;
         }
+    }
+
+    for (int j = 0; j < 2; j++) {
+        delete res[j];
     }
 }
 

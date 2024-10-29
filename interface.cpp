@@ -5,8 +5,8 @@ using namespace std;
 
 int main(){
     // rewrite your dataset path here
-    std::string data_path = "~/dataset/1_2d_T_drive_11317142.txt";
-    std::string output_path = "~/output/T-drive-AAA.csv";
+    std::string data_path = "../dataset/1_2d_T_drive_11317142.txt";
+    std::string output_path = "../output/T-drive-AAA.csv";
 
     int data_scale = 1000000;       // total data scale
     int data_dimension = 2;         // data dimension of the dataset
@@ -39,6 +39,6 @@ int main(){
         experiment->test_Elkan();
         experiment->test_Drake();
 
-        output_path = "~/output/T-drive-AAA.csv";
+        output_path = "../output/T-drive-AAA.csv";
     }
 } 

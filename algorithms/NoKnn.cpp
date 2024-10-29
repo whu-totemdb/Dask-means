@@ -41,7 +41,7 @@ void NoKnn::run() {
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
-    double total_runtime = 0.0;
+    double total_runtime = init_time;
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
@@ -61,6 +61,10 @@ void NoKnn::setInnerBound() {
         ballTree2nn(centroid_list[i]->coordinate, *(centroid_index->root), res, centroid_list);
         inner_bound[i] = res[1]->dis;
         inner_id[i] = res[1]->id;
+
+        for (int j = 0; j < 2; j++) {
+            delete res[j];
+        }
     }
 }
 
@@ -116,6 +120,12 @@ void NoKnn::assignLabels(Node& node, double ub) {
             centroid_id = res[0].id;
             Cluster* new_cluster = centroid_list[centroid_id]->cluster;
             new_cluster->dataIn(1, data);
+
+            delete res;
         }
+    }
+
+    for (int j = 0; j < 2; j++) {
+        delete res[j];
     }
 }

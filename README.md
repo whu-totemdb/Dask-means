@@ -22,52 +22,52 @@ The datasets we use are all low-dimensional (2-3 dimensional) spatial vectors, w
 #### [Least squares quantization in PCM](https://hal.science/hal-04614938/document)
 
 - The most widely used $k$-means algorithm.
-- The code is in `~/algorithms/Lloyd.h` and `~/algorithms/Lloyd.cpp`. 
+- The code is in `./algorithms/Lloyd.h` and `./algorithms/Lloyd.cpp`. 
 
 #### [Using the Triangle Inequality to Accelerate k-Means](https://cdn.aaai.org/ICML/2003/ICML03-022.pdf)
 
 - For each spatial vector, this algorithm maintains one global upper bound and $k$ lower bounds, and uses the triangle inequality to accelerate $k$-means.
-- The code is in `~/algorithms/Elkan.h` and `~/algorithms/Elkan.cpp`.
+- The code is in `./algorithms/Elkan.h` and `./algorithms/Elkan.cpp`.
 
 #### [Making k-means even faster](https://epubs.siam.org/doi/pdf/10.1137/1.9781611972801.12)
 
 - Using the triangle inequality. But for each spatial vector, only one upper bound and the minimum lower bound to any cluster centroids are maintained.
-- The code is in `~/algorithms/Hamerly.h` and `~/algorithms/Hamerly.cpp`.
+- The code is in `./algorithms/Hamerly.h` and `./algorithms/Hamerly.cpp`.
 
 #### [Accelerated k-means with adaptive distance bounds](http://opt.kyb.tuebingen.mpg.de/papers/opt2012_paper_13.pdf)
 
 - For each spatial vector, the algorithm sorts all centroids according to the distance to the spatial vector and then maintains $1<b<k$ nearest distances as lower bounds.
-- The code is in `~/algorithms/Drake.h` and `~/algorithms/Drake.cpp`.
+- The code is in `./algorithms/Drake.h` and `./algorithms/Drake.cpp`.
 
 #### [Yinyang K-Means: A Drop-In Replacement of the Classic K-Means with Consistent Speedup](https://proceedings.mlr.press/v37/ding15.pdf)
 
 - The algorithm groups the clusters using classic $k$-means first and maintains bounds for each group. Then it implements a pruning method with multiple filters to accelerate $k$-means.
-- The code is in `~/algorithms/Yinyang.h` and `~/algorithms/Yinyang.cpp`.
+- The code is in `./algorithms/Yinyang.h` and `./algorithms/Yinyang.cpp`.
 
 #### [A Fast Adaptive k-means with No Bounds](https://par.nsf.gov/servlets/purl/10286756)
 
 - Organize spatial vectors using a hyperspherical structure to avoid boundary maintenance.
-- The code is in the `~/algorithms/NoBound.h`.
+- The code is in the `./algorithms/NoBound.h`.
 
 #### [A Dual-Tree Algorithm for Fast k-means Clustering with Large k](https://epubs.siam.org/doi/pdf/10.1137/1.9781611974973.34)
 
 - Organize spatial vectors using a dual-tree structure to accelerate the execution of the $k$-means algorithm.
-- The code is in `~/algorithms/DualTree.h` and `~/algorithms/Dualtree.cpp`.
+- The code is in `./algorithms/DualTree.h` and `./algorithms/Dualtree.cpp`.
 
 ## 4 How to Run Dask-means
 
 ### 4.1 Code with comparison algorithms
 
-You can find all source code of comparison algorithms in `~/algorithms/`. 
+You can find all source code of comparison algorithms in `./algorithms/`. 
 
 **Parameter configuration:**
 
-You can run the code in `~/interface.cpp`. But before that, several parameters should be set:
+You can run the code in `./interface.cpp`. But before that, several parameters should be set:
 
 ```c++
 // rewrite your dataset path here, for example
-std::string data_path = "~/dataset/dataset_name.txt";
-std::string output_path = "~/output/outut_name.csv";
+std::string data_path = "../dataset/dataset_name.txt";
+std::string output_path = "../output/outut_name.csv";
 
 int data_scale = 1000000;       // total data scale
 int data_dimension = 2;         // data dimension of the dataset
@@ -93,6 +93,6 @@ make
 
 **Runtime Prediction**
 
-- You can find all the relevant code for runtime adjustments in `~/predictor/`.
-- The code for runtime prediction is in the file `~/predictor/main.py`.
-- The code for runtime adjustment is in the file `~/predictor/GaussinProcess.py`.
+- You can find all the relevant code for runtime adjustments in `./predictor/`.
+- The code for runtime prediction is in the file `./predictor/main.py`.
+- The code for runtime adjustment is in the file `./predictor/GaussinProcess.py`.

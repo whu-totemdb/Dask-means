@@ -105,7 +105,7 @@ void Experiment::test_NoBound() {
 
 void Experiment::test_DualTree() {
     cout << "=============starting DualTree=============" << endl;
-    DualTree* dual_tree = new DualTree(leaf_capacity);
+    DualTree* dual_tree = new DualTree(6);
     dual_tree->initParameters(data_scale, data_dimension, k);
     dual_tree->load(data_path);
     dual_tree->run();

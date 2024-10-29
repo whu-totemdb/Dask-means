@@ -64,11 +64,16 @@ void KdTreeNode::resetBound(const std::vector<std::vector<double>>& dataset,
     for (size_t i = 0; i< 2; i++) {
         res[i] = new KnnRes();
     }
-    Utils::kdTree2nn(split_point, node, res, centroid_list);
+    // Utils::kdTree2nn(split_point, node, res, centroid_list);
+    Utils::calculate2nn(split_point, res, centroid_list);
 
     // set upper bound and lower bound
     ub = getUpperBound(dataset, centroid_list[res[0]->id]->getCoordinate());
     lb = getLowerBound(dataset, centroid_list[res[1]->id]->getCoordinate());
+
+    for (int j = 0; j < 2; j++) {
+        delete res[j];
+    }
 }
 
 double KdTreeNode::getUpperBound(const std::vector<std::vector<double>>& dataset,

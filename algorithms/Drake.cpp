@@ -47,7 +47,7 @@ void Drake::run() {
     } while (!hasConverged() && it < max_iterations);
 
     // show total runtime
-    double total_runtime = 0.0;
+    double total_runtime = init_time;
     for (size_t i = 0; i < max_iterations; i++) {
         total_runtime += runtime[i];
     }
