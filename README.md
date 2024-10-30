@@ -17,7 +17,7 @@ The datasets we use are all low-dimensional (2-3 dimensional) spatial vectors, w
 |            **[Shapenet](https://shapenet.org/)**             |      10M      |     3     | Shapenet is a widely used point cloud dataset for 3D shape understanding and analysis. |
 
 
-## 3 Comparison Algorithm
+## 3 Comparison Algorithms
 
 #### [Least squares quantization in PCM](https://hal.science/hal-04614938/document)
 
@@ -67,7 +67,7 @@ You can run the code in `./interface.cpp`. But before that, several parameters s
 ```c++
 // rewrite your dataset path here, for example
 std::string data_path = "../dataset/dataset_name.txt";
-std::string output_path = "../output/outut_name.csv";
+std::string output_path = "../output/output_name.csv";
 
 int data_scale = 1000000;       // total data scale
 int data_dimension = 2;         // data dimension of the dataset
@@ -96,3 +96,7 @@ make
 - You can find all the relevant code for runtime adjustments in `./predictor/`.
 - The code for runtime prediction is in the file `./predictor/main.py`.
 - The code for runtime adjustment is in the file `./predictor/GaussinProcess.py`.
+
+### 4.3 Run Dask-means on Android
+
+We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Java interfaces for various $k$-means algorithms.
