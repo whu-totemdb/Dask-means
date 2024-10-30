@@ -52,7 +52,7 @@ The datasets we use are all low-dimensional (2-3 dimensional) spatial vectors, w
 #### [A Dual-Tree Algorithm for Fast k-means Clustering with Large k](https://epubs.siam.org/doi/pdf/10.1137/1.9781611974973.34)
 
 - Organize spatial vectors using a dual-tree structure to accelerate the execution of the $k$-means algorithm.
-- The code is in `./algorithms/DualTree.h` and `./algorithms/Dualtree.cpp`.
+- The code is in `./algorithms/DualTree.h` and `./algorithms/DualTree.cpp`.
 
 ## 4 How to Run Dask-means
 
@@ -79,7 +79,7 @@ k_list[2] = 10000;
 
 **Compile and run:**
 
-Go to the project file `~/dask-means-cpp/`, and then enter the following command in the terminal:
+Go to the project file `./dask-means-cpp/`, and then enter the following command in the terminal:
 
 ```sh
 mkdir build
@@ -99,9 +99,9 @@ make
 
 ### 4.3 Run Dask-means on Android
 
-We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Java interfaces for various $k$-means algorithms.
-- Firstly, you need to load this project into the /main/cpp folder
-- Secondly, you need to declare the position of the camke file in the build.gradle(:app) to expose all the cpp files to the Android project
+We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Java interfaces for various $k$-means algorithms. To run Dask-means on Android, you should follow these several steps:
+- Firstly, you need to clone this project into the `./main/cpp/` folder in your Android project.
+- Secondly, you need to declare the position of the camke file in `build.gradle(:app)` to expose all the cpp files to your Android project.
   ```java
   externalNativeBuild {
         cmake {
@@ -109,7 +109,7 @@ We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Jav
         }
   }
   ```
-- Then, you need to declare all the functions in the MainActivity.java by entering the following command:
+- Then, you need to declare all the functions in the `MainActivity.java` by entering the following code:
   ```java
   public native double testLloyd();
   public native double testDaskMeans();
