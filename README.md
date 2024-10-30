@@ -100,3 +100,23 @@ make
 ### 4.3 Run Dask-means on Android
 
 We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Java interfaces for various $k$-means algorithms.
+- Firstly, you need to load this project into the /main/cpp folder
+- Secondly, you need to declare the position of the camke file in the build.gradle(:app) to expose all the cpp files to the Android project
+  ```java
+  externalNativeBuild {
+        cmake {
+            path "./src/main/cpp/CMakeLists.txt"
+        }
+  }
+  ```
+- Then, you need to declare all the functions in the MainActivity.java by entering the following command:
+  ```java
+  public native double testLloyd();
+  public native double testDaskMeans();
+  public native double testNoBound();
+  public native double testDualTree();
+  public native double testHamerly();
+  public native double testDrake();
+  public native double testYinYang();
+  public native double testElkan();
+  ```
