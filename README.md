@@ -120,3 +120,30 @@ We added a JNI file `./interface_jni.cpp`, and within it, we implemented the Jav
   public native double testYinYang();
   public native double testElkan();
   ```
+
+  ## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Citation
+
+If you use our code for research work, please cite our paper as below:
+
+```
+
+@inproceedings{Ji2025dask,
+
+  title={On Simplifying Large-Scale Spatial Vectors: Fast, Memory-Efficient, and Cost-Predictable k-means},
+
+  author={Yushuai Ji, Zepeng Liu, Sheng Wang, Yuan Sun, and Zhiyong Peng},
+
+  booktitle={Proceedings of the 41th International Conference on Data Engineering},
+
+  year={2025},
+
+  publisher={IEEE},
+
+  organization={IEEE}
+
+}
+
+```
